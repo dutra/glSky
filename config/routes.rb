@@ -1,4 +1,11 @@
 GlSky::Application.routes.draw do
+
+  root to: 'static_pages#index'
+  match '/skychart', to: 'static_pages#sky_chart'
+
+  
+  
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

@@ -1,5 +1,5 @@
 
-var scene, camera, renderer, clock, controls, scale;
+var scene, camera, renderer, clock, controls, scale, stats;
 
 var geometry, material, cube;
 var stars = [];
@@ -35,6 +35,11 @@ function init() {
     cube = new THREE.Mesh( geometry, material );
     scene.add( cube );
 
+    stats = new Stats();
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.top = '0px';
+    document.body.appendChild( stats.domElement );
+    
 
 }
 
@@ -66,6 +71,8 @@ function render() {
 
 
     renderer.render(scene, camera);
+
+    stats.update();
 }
 
 
