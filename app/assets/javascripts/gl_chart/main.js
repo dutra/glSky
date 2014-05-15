@@ -19,7 +19,7 @@ function init() {
     controls = new THREE.TrackballControls(camera);
     controls.noPan = true;
     controls.noRoll = true;
-    controls.zoomSpeed = -0.4;
+    controls.zoomSpeed = 8.0;
     controls.dynamicDampingFactor = 0.6;
 
     clock = new THREE.Clock();
