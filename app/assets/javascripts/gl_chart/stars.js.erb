@@ -1,0 +1,78 @@
+function Stars() {
+    _this = this;
+    this.generate_stars = _generate_stars;
+
+
+    function _generate_stars(callBack) {
+
+	$.getJSON( "data/stars.json", function( data ) {
+            var items = [];
+
+            var attributes = {
+
+                size: {type: 'f', value: [] },
+                ca:   {type: 'c', value: [] },
+		mag: {type: 'f', value: [] }
+		
+            };
+
+            var uniforms = {
+
+                color:     { type: "c", value: new THREE.Color( 0xffffff ) },
+                texture:   { type: "t", value: THREE.ImageUtils.loadTexture( '<%= image_path "textures/disc.png" %>' ) },
+
+            };
+
+            uniforms.texture.value.wrapS = uniforms.texture.value.wrapT = THREE.RepeatWrapping;
+
+            var shaderMaterial = new THREE.ShaderMaterial( {
+
+                uniforms: uniforms,
+                attributes:     attributes,
+                vertexShader:   document.getElementById( 'vertexshader' ).textContent,
+                fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+                transparent:true
+
+            });
+
+
+            var radius = 100, segments = 36, rings = 18;
+            var geometry = new THREE.Geometry();
+
+            var vertices = geometry.vertices;
+            var values_size = attributes.size.value;
+            var values_color = attributes.ca.value;
+	    var values_mag = attributes.mag.value;
+	    
+            console.log(vertices.length);
+
+
+            $.each( data, function( key, star ) {
+
+		var color = new THREE.Color( star["c"] );
+		color.offsetHSL(0,1.0,0);
+                values_color.push( color );
+
+		values_mag.push( star["m"] );
+                values_size.push( 1.0/(star["m"]+3)*25 );
+
+		geometry.vertices.push( latLongToVector3(star["co"][0], star["co"][1], 100) );
+
+            
+            });
+	    console.dir(geometry.vertices);
+	    console.dir(attributes.ca.value);
+            var sphere = new THREE.ParticleSystem( geometry, shaderMaterial );
+
+            sphere.dynamic = false;
+            sphere.frustrumCulled = true;
+
+            callBack(sphere);
+	    console.log("done callback");
+	    
+
+        });
+
+    }
+
+}

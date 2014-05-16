@@ -30,10 +30,10 @@ THREE.TrackballControls = function ( object, domElement ) {
     this.dynamicDampingFactor = 0.2;
 
     this.minDistance = 0;
-    this.maxDistance = 3;
+    this.maxDistance = 300;
 
     this.minFOV = 1;
-    this.maxFOV = 85;
+    this.maxFOV = 75;
 
     this.keys = [ 65 /*A*/, 83 /*S*/, 68 /*D*/ ];
 
@@ -62,6 +62,8 @@ THREE.TrackballControls = function ( object, domElement ) {
     _panStart = new THREE.Vector2(),
     _panEnd = new THREE.Vector2();
 
+    _this.defaultFOV = this.defaultFOV || 40;
+    
     // for reset
 
     this.target0 = this.target.clone();
@@ -183,13 +185,15 @@ THREE.TrackballControls = function ( object, domElement ) {
                 axis.crossVectors( _rotateStart, _rotateEnd ).normalize();
 
                 angle *= _this.rotateSpeed;
+//		console.log(_this.object.fov);
+		angle *= _this.object.fov / _this.defaultFOV;
 
                 quaternion.setFromAxisAngle( axis, -angle );
 
                 _eye.applyQuaternion( quaternion );
 
                 _this.object.up.applyQuaternion( quaternion );
-		console.log("Eye rotate: ", _eye);
+//		console.log("Eye rotate: ", _eye);
 //		console.log("Up: ", _this.object.up);
                 _rotateEnd.applyQuaternion( quaternion );
 
@@ -228,7 +232,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 //		_eye.multiplyScalar( factor );
 		_this.object.fov = _this.object.fov * factor;
 		_this.object.updateProjectionMatrix();
-		console.log("Zoom factor: ",factor);
+//		console.log("Zoom factor: ",factor);
 		}
 		
                 if ( _this.staticMoving ) {

@@ -1,2 +1,3 @@
-//= require ./gl_chart/util
-//= require_tree ./gl_chart
+//= require ./gl_chart/util.js
+//= require ./gl_chart/stars.js
+//= require ./gl_chart/main.js

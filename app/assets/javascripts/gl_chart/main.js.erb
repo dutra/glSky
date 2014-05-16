@@ -1,0 +1,124 @@
+
+var scene, camera, renderer, clock, controls, scale, stats;
+
+var sphere, uniforms, attributes;
+
+var geometry, material, cube;
+var stars;
+
+function init() {
+
+
+
+    clock = new THREE.Clock();
+
+    camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+    camera.position.z = 50;
+
+    controls = new THREE.TrackballControls(camera);
+    controls.noPan = true;
+    controls.zoomSpeed = 3.0;
+//    controls.dynamicDampingFactor = 0.6;
+
+
+    scene = new THREE.Scene();
+
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize( window.innerWidth , window.innerHeight );
+
+    
+
+    document.body.appendChild( renderer.domElement );
+
+    stats = new Stats();
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.top = '0px';
+    document.body.appendChild( stats.domElement );
+    //
+
+    window.addEventListener( 'resize', onWindowResize, false );
+
+    initalizeStars();
+
+}
+
+function onWindowResize() {
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+
+}
+
+function initalizeStars() {
+    var stars = new Stars();
+    stars.generate_stars(addStarsCallback);
+}
+
+function addStarsCallback(sphere) {
+    console.log("Added sphere");
+    console.dir(sphere);
+    scene.add(sphere);
+    renderer.render(scene, camera);
+
+    
+}
+
+
+// for (var i = 0; i < 36; i++) {
+//     for (var j = 0; j < 18; j++) {
+//         var geometry = new THREE.SphereGeometry( 0.01, 8, 6 );
+//         var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+//         var sphere = new THREE.Mesh( geometry, material );
+//         sphere.position = latLongToVector3(i*10.0, j*10.0, 10);
+
+//         //      console.log(sphere.position);
+//         stars.push(sphere);
+//     }
+//     console.log(i);
+// }
+
+
+
+function animate() {
+
+    requestAnimationFrame( animate );
+
+    // Fetch the delta from THREE.js' clock.
+    var delta = clock.getDelta();
+    // Pass it to the camera controller.
+    controls.update(delta);
+
+    render();
+    stats.update();
+
+}
+
+function render() {
+
+
+//    var time = Date.now() * 0.005;
+
+//    sphere.rotation.y = 0.02 * time;
+//    sphere.rotation.z = 0.02 * time;
+
+    // for( var i = 0; i < attributes.size.value.length; i ++ ) {
+
+    //     if ( i < vc1 )
+    //         attributes.size.value[ i ] = 16 + 12 * Math.sin( 0.1 * i + time );
+
+
+    // }
+
+//    attributes.size.needsUpdate = true;
+
+
+    renderer.render(scene, camera);
+
+}
+
+
+init();
+animate();
