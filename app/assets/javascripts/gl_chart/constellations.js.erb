@@ -1,0 +1,32 @@
+function Constellations() {
+    _this = this;
+    this.generate_constellations = _generate_constellations;
+
+    _this.lines = [];
+
+    function _generate_constellations(callback) {
+        $.getJSON( "data/constellations.json", function( data ) {
+
+            var material = new THREE.LineBasicMaterial({
+                color: 0xffffff
+            });
+
+            $.each( data, function( key, c ) {
+                var geometry = new THREE.Geometry();
+                var startV = latLongToVector3(c['s'][0], c['s'][1], 100);
+                var endV = latLongToVector3(c['e'][0], c['e'][1], 100);
+                geometry.vertices.push(startV);
+                geometry.vertices.push(endV);
+
+                var line = new THREE.Line(geometry, material);
+                _this.lines.push(line);
+
+            });
+
+            callback(_this.lines);
+
+        });
+    }
+
+
+}

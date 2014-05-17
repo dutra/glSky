@@ -1,8 +1,7 @@
 
 var scene, camera, renderer, clock, controls, scale, stats, gui;
 var gui_params;
-var stars;
-
+var stars, constellations;
 function init() {
 
     console.log(vector3ToLatLong(new THREE.Vector3(0,0,1)));
@@ -15,7 +14,7 @@ function init() {
     scene = new THREE.Scene();
 
 
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({ antialiasing: false });
     renderer.setSize( window.innerWidth , window.innerHeight );
 
 
@@ -31,7 +30,7 @@ function init() {
     window.addEventListener( 'resize', onWindowResize, false );
 
     init_controller();
-    initalizeStars();
+    init_elements();
     init_events();
     init_gui();
 
@@ -64,18 +63,35 @@ function onWindowResize() {
 
 }
 
-function initalizeStars() {
+function init_elements() {
+    init_stars();
+    init_constellations();
+}
+    
+
+function init_stars() {
     stars = new Stars();
     stars.generate_stars(addStarsCallback);
 }
 
 function addStarsCallback(sphere) {
     console.log("Added sphere");
-    console.dir(sphere);
     scene.add(sphere);
-    renderer.render(scene, camera);
+//    renderer.render(scene, camera);
+}
 
+function init_constellations() {
+    constellations = new Constellations();
+    constellations.generate_constellations(addConstellationsCallback);
+    
+}
 
+function addConstellationsCallback(lines) {
+    console.log("Added constellation lines");
+    for (var i=0; i < lines.length; i++)
+	scene.add(lines[i]);
+
+    
 }
 
 function init_events() {
