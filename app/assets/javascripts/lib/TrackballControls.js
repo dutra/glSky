@@ -63,6 +63,8 @@ THREE.TrackballControls = function ( object, domElement ) {
     _panEnd = new THREE.Vector2();
 
     _this.defaultFOV = this.defaultFOV || 40;
+
+    _this.mouseCallbacks = []
     
     // for reset
 
@@ -113,7 +115,7 @@ THREE.TrackballControls = function ( object, domElement ) {
     };
 
     this.getMouseOnScreen = function ( pageX, pageY, vector ) {
-
+        handleCallbacks( pageX, pageY );
         return vector.set(
             ( pageX - _this.screen.left ) / _this.screen.width,
             ( pageY - _this.screen.top ) / _this.screen.height
@@ -128,6 +130,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 
         return function ( pageX, pageY, projection ) {
+            handleCallbacks( pageX, pageY );
 
             mouseOnBall.set(
                 ( pageX - _this.screen.width * 0.5 - _this.screen.left ) / (_this.screen.width*.5),
@@ -158,7 +161,7 @@ THREE.TrackballControls = function ( object, domElement ) {
                 mouseOnBall.z = Math.sqrt( 1.0 - length * length );
 
             }
-
+            //      console.dir(_this.target);
             _eye.copy( _this.object.position ).sub( _this.target );
 
             projection.copy( _this.object.up ).setLength( mouseOnBall.y )
@@ -185,16 +188,16 @@ THREE.TrackballControls = function ( object, domElement ) {
                 axis.crossVectors( _rotateStart, _rotateEnd ).normalize();
 
                 angle *= _this.rotateSpeed;
-//		console.log(_this.object.fov);
-		angle *= _this.object.fov / _this.defaultFOV;
+                //              console.log(_this.object.fov);
+                angle *= _this.object.fov / _this.defaultFOV;
 
                 quaternion.setFromAxisAngle( axis, -angle );
 
                 _eye.applyQuaternion( quaternion );
 
                 _this.object.up.applyQuaternion( quaternion );
-//		console.log("Eye rotate: ", _eye);
-//		console.log("Up: ", _this.object.up);
+                //              console.log("Eye rotate: ", _eye);
+                //              console.log("Up: ", _this.object.up);
                 _rotateEnd.applyQuaternion( quaternion );
 
                 if ( _this.staticMoving ) {
@@ -224,17 +227,17 @@ THREE.TrackballControls = function ( object, domElement ) {
         } else {
 
             var factor = 1.0 + ( _zoomEnd.y - _zoomStart.y ) * _this.zoomSpeed;
-	    var fov = _this.object.fov;
+            var fov = _this.object.fov;
             if ( factor !== 1.0 && factor > 0.0 ) {
 
-		if ( (factor < 1.0 && fov > _this.minFOV) || (factor > 1.0 && fov < _this.maxFOV) ) {
-		
-//		_eye.multiplyScalar( factor );
-		_this.object.fov = _this.object.fov * factor;
-		_this.object.updateProjectionMatrix();
-//		console.log("Zoom factor: ",factor);
-		}
-		
+                if ( (factor < 1.0 && fov > _this.minFOV) || (factor > 1.0 && fov < _this.maxFOV) ) {
+
+                    //          _eye.multiplyScalar( factor );
+                    _this.object.fov = _this.object.fov * factor;
+                    _this.object.updateProjectionMatrix();
+                    //          console.log("Zoom factor: ",factor);
+                }
+
                 if ( _this.staticMoving ) {
 
                     _zoomStart.copy( _zoomEnd );
@@ -407,8 +410,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
         if ( _this.enabled === false ) return;
 
-        event.preventDefault();
-        event.stopPropagation();
+//        event.preventDefault();
+//        event.stopPropagation();
 
         if ( _state === STATE.NONE ) {
 
@@ -444,8 +447,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
         if ( _this.enabled === false ) return;
 
-        event.preventDefault();
-        event.stopPropagation();
+//        event.preventDefault();
+//        event.stopPropagation();
 
         if ( _state === STATE.ROTATE && !_this.noRotate ) {
 
@@ -467,8 +470,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
         if ( _this.enabled === false ) return;
 
-        event.preventDefault();
-        event.stopPropagation();
+//        event.preventDefault();
+//        event.stopPropagation();
 
         _state = STATE.NONE;
 
@@ -482,8 +485,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
         if ( _this.enabled === false ) return;
 
-        event.preventDefault();
-        event.stopPropagation();
+//        event.preventDefault();
+//        event.stopPropagation();
 
         var delta = 0;
 
@@ -539,8 +542,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
         if ( _this.enabled === false ) return;
 
-        event.preventDefault();
-        event.stopPropagation();
+//        event.preventDefault();
+//        event.stopPropagation();
 
         switch ( event.touches.length ) {
 
@@ -588,6 +591,27 @@ THREE.TrackballControls = function ( object, domElement ) {
         _state = STATE.NONE;
         _this.dispatchEvent( endEvent );
 
+    }
+
+    function handleCallbacks( pageX, pageY ) {
+	
+        var projector = new THREE.Projector();
+        var vector = new THREE.Vector3(
+            ( pageX / window.innerWidth ) * 2 - 1,
+                - ( pageY / window.innerHeight ) * 2 + 1,
+            0.5 );
+
+        projector.unprojectVector( vector, _this.object );
+
+        var dir = vector.sub( _this.object.position ).normalize();
+        for( var i=0; i < _this.mouseCallbacks.length; i++ ) {
+	    (_this.mouseCallbacks[i]) (dir);
+	}
+
+    }
+
+    this.addMouseCallback = function ( callback ) {
+	_this.mouseCallbacks.push(callback);
     }
 
     this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );

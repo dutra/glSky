@@ -1,34 +1,39 @@
 function Stars() {
-    _this = this;
+    // public methods
     this.generate_stars = _generate_stars;
-
+    this.updateLimitMag = _updateLimitMag;
+    // private
+    _this = this;
+    _this.sphere = undefined;
+    _this.uniforms = undefined;
+    _this.attributes = undefined;
 
     function _generate_stars(callBack) {
 
-	$.getJSON( "data/stars.json", function( data ) {
+        $.getJSON( "data/stars.json", function( data ) {
             var items = [];
 
-            var attributes = {
+            _this.attributes = {
 
                 size: {type: 'f', value: [] },
                 ca:   {type: 'c', value: [] },
-		mag: {type: 'f', value: [] }
-		
+                mag: {type: 'f', value: [] }
+
             };
 
-            var uniforms = {
-
+            _this.uniforms = {
+                limitMag: { type: 'f', value: 4.5 },
                 color:     { type: "c", value: new THREE.Color( 0xffffff ) },
                 texture:   { type: "t", value: THREE.ImageUtils.loadTexture( '<%= image_path "textures/disc.png" %>' ) },
 
             };
 
-            uniforms.texture.value.wrapS = uniforms.texture.value.wrapT = THREE.RepeatWrapping;
+            _this.uniforms.texture.value.wrapS = _this.uniforms.texture.value.wrapT = THREE.RepeatWrapping;
 
             var shaderMaterial = new THREE.ShaderMaterial( {
 
-                uniforms: uniforms,
-                attributes:     attributes,
+                uniforms: _this.uniforms,
+                attributes:     _this.attributes,
                 vertexShader:   document.getElementById( 'vertexshader' ).textContent,
                 fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
                 transparent:true
@@ -40,39 +45,46 @@ function Stars() {
             var geometry = new THREE.Geometry();
 
             var vertices = geometry.vertices;
-            var values_size = attributes.size.value;
-            var values_color = attributes.ca.value;
-	    var values_mag = attributes.mag.value;
-	    
+            var values_size = _this.attributes.size.value;
+            var values_color = _this.attributes.ca.value;
+            var values_mag = _this.attributes.mag.value;
+
             console.log(vertices.length);
 
 
             $.each( data, function( key, star ) {
 
-		var color = new THREE.Color( star["c"] );
-		color.offsetHSL(0,1.0,0);
+                var color = new THREE.Color( star["c"] );
+                color.offsetHSL(0,1.0,0);
                 values_color.push( color );
 
-		values_mag.push( star["m"] );
+                values_mag.push( star["m"] );
                 values_size.push( 1.0/(star["m"]+3)*25 );
 
-		geometry.vertices.push( latLongToVector3(star["co"][0], star["co"][1], 100) );
+                geometry.vertices.push( latLongToVector3(star["co"][0], star["co"][1], 100) );
 
-            
+
             });
-	    console.dir(geometry.vertices);
-	    console.dir(attributes.ca.value);
-            var sphere = new THREE.ParticleSystem( geometry, shaderMaterial );
+            console.dir(geometry.vertices);
+            console.dir(_this.attributes.ca.value);
+            _this.sphere = new THREE.ParticleSystem( geometry, shaderMaterial );
 
-            sphere.dynamic = false;
-            sphere.frustrumCulled = true;
+            _this.sphere.dynamic = false;
+            _this.sphere.frustrumCulled = true;
 
-            callBack(sphere);
-	    console.log("done callback");
-	    
+            callBack(_this.sphere);
+            console.log("done callback");
+
 
         });
 
+    }
+
+    function _updateLimitMag(mag) {
+        if(_this.uniforms != undefined) {
+//            console.log("Mag: ", mag);
+            _this.uniforms.limitMag.value = mag;
+        }
     }
 
 }

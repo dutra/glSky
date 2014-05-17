@@ -36,12 +36,12 @@ def process_stars
       color = "#ffffff"
     end
 
-    if mag > 7
+    if mag > 8
       next
     end
 
 
-    astars.push({n: name, c: color, m: mag,  co: [dec,ra]})
+    astars.push({c: color, m: mag,  co: [dec,ra]})
     
     
   end

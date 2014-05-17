@@ -1,10 +1,17 @@
+<div id="chart">
+</div>
+
+
 <%= content_for :scripts do %>
 <%= javascript_include_tag "lib/three.min.js" %>
 <%= javascript_include_tag "lib/stats.min.js" %>
+<%= javascript_include_tag "lib/dat.gui.min.js" %>
 <%= javascript_include_tag "lib/TrackballControls.js" %>
 
 <script type="x-shader/x-vertex" id="vertexshader">
 
+  uniform float limitMag;
+  
   attribute float size;
   attribute float mag;
   attribute vec3 ca;
@@ -14,7 +21,7 @@
 
   void main() {
 
-  if(mag < 4.2) {
+  if(mag < limitMag) {
 	   should_discard = 0.0;
            vColor = ca;
 

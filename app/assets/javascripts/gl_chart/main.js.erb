@@ -1,25 +1,16 @@
 
-var scene, camera, renderer, clock, controls, scale, stats;
-
-var sphere, uniforms, attributes;
-
-var geometry, material, cube;
+var scene, camera, renderer, clock, controls, scale, stats, gui;
+var gui_params;
 var stars;
 
 function init() {
 
-
+    console.log(vector3ToLatLong(new THREE.Vector3(0,0,1)));
 
     clock = new THREE.Clock();
 
     camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.z = 50;
-
-    controls = new THREE.TrackballControls(camera);
-    controls.noPan = true;
-    controls.zoomSpeed = 3.0;
-//    controls.dynamicDampingFactor = 0.6;
-
 
     scene = new THREE.Scene();
 
@@ -27,20 +18,41 @@ function init() {
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth , window.innerHeight );
 
-    
 
-    document.body.appendChild( renderer.domElement );
+
+    $('#chart').append( renderer.domElement );
 
     stats = new Stats();
     stats.domElement.style.position = 'absolute';
     stats.domElement.style.top = '0px';
-    document.body.appendChild( stats.domElement );
+    $('#chart').append( stats.domElement );
     //
 
     window.addEventListener( 'resize', onWindowResize, false );
 
+    init_controller();
     initalizeStars();
+    init_events();
+    init_gui();
 
+}
+
+function init_controller() {
+    controls = new THREE.TrackballControls(camera, $('#chart')[0]);
+    controls.noPan = true;
+    controls.zoomSpeed = 3.0;
+    //    controls.dynamicDampingFactor = 0.6;
+}
+
+function init_gui() {
+    gui = new dat.GUI();
+
+    gui_params = {
+	mag: 4.5
+    }
+    
+    gui.add(gui_params, 'mag').min(0.0).max(8.0).step(0.5);
+    
 }
 
 function onWindowResize() {
@@ -53,7 +65,7 @@ function onWindowResize() {
 }
 
 function initalizeStars() {
-    var stars = new Stars();
+    stars = new Stars();
     stars.generate_stars(addStarsCallback);
 }
 
@@ -63,22 +75,18 @@ function addStarsCallback(sphere) {
     scene.add(sphere);
     renderer.render(scene, camera);
 
-    
+
 }
 
+function init_events() {
+    controls.addMouseCallback(updatePosition);
 
-// for (var i = 0; i < 36; i++) {
-//     for (var j = 0; j < 18; j++) {
-//         var geometry = new THREE.SphereGeometry( 0.01, 8, 6 );
-//         var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-//         var sphere = new THREE.Mesh( geometry, material );
-//         sphere.position = latLongToVector3(i*10.0, j*10.0, 10);
+}
 
-//         //      console.log(sphere.position);
-//         stars.push(sphere);
-//     }
-//     console.log(i);
-// }
+function updatePosition(dir) {
+//    console.log("UpdatePosition called");
+//    console.log(vector3ToLatLong(dir));
+}
 
 
 
@@ -86,11 +94,12 @@ function animate() {
 
     requestAnimationFrame( animate );
 
-    // Fetch the delta from THREE.js' clock.
     var delta = clock.getDelta();
-    // Pass it to the camera controller.
     controls.update(delta);
 
+    if(stars != undefined)
+	stars.updateLimitMag(gui_params.mag);
+    
     render();
     stats.update();
 
@@ -99,10 +108,10 @@ function animate() {
 function render() {
 
 
-//    var time = Date.now() * 0.005;
+    //    var time = Date.now() * 0.005;
 
-//    sphere.rotation.y = 0.02 * time;
-//    sphere.rotation.z = 0.02 * time;
+    //    sphere.rotation.y = 0.02 * time;
+    //    sphere.rotation.z = 0.02 * time;
 
     // for( var i = 0; i < attributes.size.value.length; i ++ ) {
 
@@ -112,7 +121,7 @@ function render() {
 
     // }
 
-//    attributes.size.needsUpdate = true;
+    //    attributes.size.needsUpdate = true;
 
 
     renderer.render(scene, camera);
