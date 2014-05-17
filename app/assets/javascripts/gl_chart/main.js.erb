@@ -1,7 +1,7 @@
 
 var scene, camera, renderer, clock, controls, scale, stats, gui;
 var gui_params;
-var stars, constellations;
+var stars, constellation_lines;
 function init() {
 
     console.log(vector3ToLatLong(new THREE.Vector3(0,0,1)));
@@ -47,10 +47,29 @@ function init_gui() {
     gui = new dat.GUI();
 
     gui_params = {
-	mag: 4.5
+	mag: 4.5,
+	constellations: true
     }
     
-    gui.add(gui_params, 'mag').min(0.0).max(8.0).step(0.5);
+    gui.add(gui_params, 'mag').min(0.0).max(8.0).step(0.5)
+	.onChange(function(mag) {
+	    if(stars != undefined)
+		stars.updateLimitMag(gui_params.mag);
+	    });
+    gui.add(gui_params, 'constellations')
+	.onChange(function(value) {
+	    if(value) {
+		for (var i=0; i < constellation_lines.length; i++)
+		    scene.add(constellation_lines[i]);
+
+	    } else {
+		for (var i=0; i < constellation_lines.length; i++)
+		    scene.remove(constellation_lines[i]);
+
+	    }
+	});
+
+
     
 }
 
@@ -78,6 +97,7 @@ function addStarsCallback(sphere) {
     console.log("Added sphere");
     scene.add(sphere);
 //    renderer.render(scene, camera);
+
 }
 
 function init_constellations() {
@@ -88,6 +108,7 @@ function init_constellations() {
 
 function addConstellationsCallback(lines) {
     console.log("Added constellation lines");
+    constellation_lines = lines;
     for (var i=0; i < lines.length; i++)
 	scene.add(lines[i]);
 
@@ -113,8 +134,6 @@ function animate() {
     var delta = clock.getDelta();
     controls.update(delta);
 
-    if(stars != undefined)
-	stars.updateLimitMag(gui_params.mag);
     
     render();
     stats.update();
