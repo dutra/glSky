@@ -52,18 +52,18 @@ function init_gui() {
     }
 
     gui.add(gui_params, 'mag').min(0.0).max(8.0).step(0.5)
+	.name("Magnitude")
         .onChange(function(mag) {
             if(stars != undefined)
                 stars.updateLimitMag(gui_params.mag);
         });
     gui.add(gui_params, 'constellations')
+	.name("Constellations")
         .onChange(function(value) {
             if(value)
                 scene.add(constellation_lines);
             else
                 scene.remove(constellation_lines);
-
-
         });
 
 
