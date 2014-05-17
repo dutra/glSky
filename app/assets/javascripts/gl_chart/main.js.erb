@@ -14,7 +14,7 @@ function init() {
     scene = new THREE.Scene();
 
 
-    renderer = new THREE.WebGLRenderer({ antialiasing: false });
+    renderer = new THREE.WebGLRenderer({ antialias: true, precision: "lowp", alpha: false, premultipliedAlpha: false, stencil: false });
     renderer.setSize( window.innerWidth , window.innerHeight );
 
 
@@ -47,30 +47,27 @@ function init_gui() {
     gui = new dat.GUI();
 
     gui_params = {
-	mag: 4.5,
-	constellations: true
+        mag: 4.5,
+        constellations: true
     }
-    
+
     gui.add(gui_params, 'mag').min(0.0).max(8.0).step(0.5)
-	.onChange(function(mag) {
-	    if(stars != undefined)
-		stars.updateLimitMag(gui_params.mag);
-	    });
+        .onChange(function(mag) {
+            if(stars != undefined)
+                stars.updateLimitMag(gui_params.mag);
+        });
     gui.add(gui_params, 'constellations')
-	.onChange(function(value) {
-	    if(value) {
-		for (var i=0; i < constellation_lines.length; i++)
-		    scene.add(constellation_lines[i]);
-
-	    } else {
-		for (var i=0; i < constellation_lines.length; i++)
-		    scene.remove(constellation_lines[i]);
-
-	    }
-	});
+        .onChange(function(value) {
+            if(value)
+                scene.add(constellation_lines);
+            else
+                scene.remove(constellation_lines);
 
 
-    
+        });
+
+
+
 }
 
 function onWindowResize() {
@@ -86,7 +83,7 @@ function init_elements() {
     init_stars();
     init_constellations();
 }
-    
+
 
 function init_stars() {
     stars = new Stars();
@@ -96,23 +93,22 @@ function init_stars() {
 function addStarsCallback(sphere) {
     console.log("Added sphere");
     scene.add(sphere);
-//    renderer.render(scene, camera);
+    //    renderer.render(scene, camera);
 
 }
 
 function init_constellations() {
     constellations = new Constellations();
     constellations.generate_constellations(addConstellationsCallback);
-    
+
 }
 
 function addConstellationsCallback(lines) {
     console.log("Added constellation lines");
     constellation_lines = lines;
-    for (var i=0; i < lines.length; i++)
-	scene.add(lines[i]);
+    scene.add(lines);
 
-    
+
 }
 
 function init_events() {
@@ -121,8 +117,8 @@ function init_events() {
 }
 
 function updatePosition(dir) {
-//    console.log("UpdatePosition called");
-//    console.log(vector3ToLatLong(dir));
+    //    console.log("UpdatePosition called");
+    //    console.log(vector3ToLatLong(dir));
 }
 
 
@@ -134,7 +130,7 @@ function animate() {
     var delta = clock.getDelta();
     controls.update(delta);
 
-    
+
     render();
     stats.update();
 
