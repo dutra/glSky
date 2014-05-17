@@ -59,7 +59,7 @@ function Stars() {
                 values_color.push( color );
 
                 values_mag.push( star["m"] );
-                values_size.push( 1.0/(star["m"]+3)*25 );
+                values_size.push( 1.0/Math.pow((star["m"]+5),1.1)*60 );
 
                 geometry.vertices.push( latLongToVector3(star["co"][0], star["co"][1], 100) );
 
