@@ -24,7 +24,7 @@ function Stars() {
             _this.uniforms = {
                 limitMag: { type: 'f', value: 4.5 },
                 color:     { type: "c", value: new THREE.Color( 0xffffff ) },
-                texture:   { type: "t", value: THREE.ImageUtils.loadTexture( '<%= image_path "textures/disc.png" %>' ) },
+                texture:   { type: "t", value: THREE.ImageUtils.loadTexture( '<%= image_path "textures/disc.png" %>' ) }
 
             };
 
@@ -34,8 +34,8 @@ function Stars() {
 
                 uniforms: _this.uniforms,
                 attributes:     _this.attributes,
-                vertexShader:   document.getElementById( 'vertexshader' ).textContent,
-                fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+                vertexShader:   document.getElementById( 'star.vert' ).textContent,
+                fragmentShader: document.getElementById( 'star.frag' ).textContent,
                 transparent:true
 
             });
@@ -59,7 +59,7 @@ function Stars() {
                 values_color.push( color );
 
                 values_mag.push( star["m"] );
-                values_size.push( 1.0/Math.pow((star["m"]+5),1.1)*60 );
+                values_size.push( 1.0/Math.pow((star["m"]+5),1.1)*60);
 
                 geometry.vertices.push( latLongToVector3(star["co"][0], star["co"][1], 100) );
 
@@ -69,7 +69,7 @@ function Stars() {
             console.dir(_this.attributes.ca.value);
             _this.sphere = new THREE.ParticleSystem( geometry, shaderMaterial );
 
-            _this.sphere.dynamic = false;
+            _this.sphere.dynamic = true;
             _this.sphere.frustrumCulled = true;
 
             callBack(_this.sphere);

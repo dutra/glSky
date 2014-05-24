@@ -8,10 +8,10 @@
 <%= javascript_include_tag "lib/dat.gui.min.js" %>
 <%= javascript_include_tag "lib/TrackballControls.js" %>
 
-<script type="x-shader/x-vertex" id="vertexshader">
+<script type="x-shader/x-vertex" id="star.vert">
 
   uniform float limitMag;
-  
+
   attribute float size;
   attribute float mag;
   attribute vec3 ca;
@@ -22,7 +22,7 @@
   void main() {
 
   if(mag < limitMag) {
-	   should_discard = 0.0;
+           should_discard = 0.0;
            vColor = ca;
 
 
@@ -33,15 +33,15 @@
 
            gl_Position = projectionMatrix * mvPosition;
            }
-	   else {
-	   should_discard = 1.0;
-	   }
+           else {
+           should_discard = 1.0;
+           }
 
            }
 
            </script>
 
-<script type="x-shader/x-fragment" id="fragmentshader">
+<script type="x-shader/x-fragment" id="star.frag">
 
   uniform vec3 color;
   uniform sampler2D texture;
@@ -59,6 +59,46 @@
   }
 
 </script>
+
+<script type="x-shader/x-vertex" id="messier.vert">
+
+  attribute float size;
+  attribute vec3 ca;
+
+  varying vec3 vColor;
+
+  void main() {
+
+  vColor = ca;
+
+
+  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+  gl_PointSize = size;
+  //gl_PointSize = size * ( 300.0 / length( mvPosition.xyz ) );
+
+  gl_Position = projectionMatrix * mvPosition;
+  }
+
+</script>
+
+<script type="x-shader/x-fragment" id="messier.frag">
+
+  uniform vec3 color;
+  uniform sampler2D texture;
+
+  varying vec3 vColor;
+
+  void main() {
+
+  gl_FragColor = vec4( vColor, 1.0 );
+  gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
+
+  }
+
+</script>
+
+
 
 <%= javascript_include_tag "gl_chart" %>
 <% end %>

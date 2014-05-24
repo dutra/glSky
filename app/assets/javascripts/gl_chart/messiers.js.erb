@@ -1,0 +1,81 @@
+function Messiers() {
+    _this = this;
+    this.generate_messiers = _generate_messiers;
+
+    function _generate_messiers(callback) {
+
+        $.getJSON( "data/messiers.json", function( data ) {
+
+            function getTexture() {
+
+                var canvas = document.createElement('canvas');
+                canvas.width = 32;
+                canvas.height = 32;
+
+                var ctx = canvas.getContext('2d');
+
+                var centerX = canvas.width / 2;
+                var centerY = canvas.height / 2;
+                var radius = 10;
+
+                ctx.beginPath();
+                ctx.translate(0,0);
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = '#ffffff';
+                ctx.setLineDash([4,6]);
+                ctx.stroke();
+
+
+                var texture = new THREE.Texture(canvas);
+                texture.needsUpdate = true;
+                return texture;
+            }
+
+            _this.attributes = {
+                size: {type: 'f', value: [] },
+                ca:   {type: 'c', value: [] },
+            };
+
+            _this.uniforms = {
+                color:     { type: "c", value: new THREE.Color( 0xffffff ) },
+                texture:   { type: "t", value: getTexture() }
+            };
+
+            _this.uniforms.texture.value.wrapS = _this.uniforms.texture.value.wrapT = THREE.RepeatWrapping;
+
+            var shaderMaterial = new THREE.ShaderMaterial( {
+
+                uniforms: _this.uniforms,
+                attributes:     _this.attributes,
+                vertexShader:   document.getElementById( 'messier.vert' ).textContent,
+                fragmentShader: document.getElementById( 'messier.frag' ).textContent,
+                transparent: true
+
+            });
+
+
+            var geom = new THREE.Geometry();
+            var values_size = _this.attributes.size.value;
+            var values_color = _this.attributes.ca.value;
+
+
+            $.each( data, function( key, messier ) {
+
+
+                var particle = latLongToVector3(messier["co"][0], messier["co"][1], 100);
+                geom.vertices.push(particle);
+
+                var color = new THREE.Color( 0xffffff );
+                values_color.push( color );
+                values_size.push( messier["s"]*30 );
+
+            });
+
+            var system = new THREE.ParticleSystem(geom, shaderMaterial);
+            callback(system);
+
+        });
+    }
+
+}

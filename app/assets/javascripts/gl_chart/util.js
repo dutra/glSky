@@ -1,18 +1,17 @@
 // convert the positions from a lat, lon to a position on a sphere.
-function latLongToVector3(lat, lon, radius, height) {
-    height = height || 0;
+function latLongToVector3(lat, lon, radius) {
 
     // x-axis goes through long,lat (0,0) so longitude 0 meets equator
     // y-axis goes through (0,90)
     // z-axis goes through poles
 
     // convert to radians
-    var lat = (lat)*Math.PI/180;
-    var lon = (lon)*Math.PI/180;
+    var lat = (lat)*Math.PI/180.0;
+    var lon = (lon)*Math.PI/180.0;
 
-    var x = (radius+height) * Math.cos(lat) * Math.cos(lon);
-    var y = (radius+height) * Math.cos(lat) * Math.sin(lon);
-    var z = (radius+height) * Math.sin(lat);
+    var x = (radius) * Math.cos(lat) * Math.cos(lon);
+    var y = (radius) * Math.cos(lat) * Math.sin(lon);
+    var z = (radius) * Math.sin(lat);
 
     return new THREE.Vector3(x,y,z);
 }

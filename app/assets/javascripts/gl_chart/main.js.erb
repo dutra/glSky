@@ -39,8 +39,9 @@ function init() {
 function init_controller() {
     controls = new THREE.TrackballControls(camera, $('#chart')[0]);
     controls.noPan = true;
-    controls.zoomSpeed = 3.0;
-    //    controls.dynamicDampingFactor = 0.6;
+    controls.zoomSpeed = 2.0;
+    controls.rotateSpeed = 0.5;
+    controls.dynamicDampingFactor = 0.6;
 }
 
 function init_gui() {
@@ -80,8 +81,10 @@ function onWindowResize() {
 }
 
 function init_elements() {
-    init_stars();
     init_constellations();
+    init_stars();
+    init_messiers();
+    
 }
 
 
@@ -95,6 +98,14 @@ function addStarsCallback(sphere) {
     scene.add(sphere);
     //    renderer.render(scene, camera);
 
+}
+function init_messiers() {
+    var messiers_obj = new Messiers();
+    messiers_obj.generate_messiers(addMessiersCallback);
+}
+
+function addMessiersCallback(messiers) {
+    scene.add(messiers);
 }
 
 function init_constellations() {
