@@ -1,7 +1,7 @@
 
 var scene, camera, renderer, clock, controls, scale, stats, gui;
 var gui_params;
-var stars, constellation_lines;
+var stars, constellation_lines, messiers;
 function init() {
 
     console.log(vector3ToLatLong(new THREE.Vector3(0,0,1)));
@@ -49,7 +49,8 @@ function init_gui() {
 
     gui_params = {
         mag: 4.5,
-        constellations: true
+        constellations: true,
+	messiers: true
     }
 
     gui.add(gui_params, 'mag').min(0.0).max(8.0).step(0.5)
@@ -65,6 +66,14 @@ function init_gui() {
                 scene.add(constellation_lines);
             else
                 scene.remove(constellation_lines);
+        });
+    gui.add(gui_params, 'messiers')
+	.name("Messier")
+        .onChange(function(value) {
+            if(value)
+                scene.add(messiers);
+            else
+                scene.remove(messiers);
         });
 
 
@@ -101,11 +110,14 @@ function addStarsCallback(sphere) {
 }
 function init_messiers() {
     var messiers_obj = new Messiers();
+    console.dir(messiers_obj);
     messiers_obj.generate_messiers(addMessiersCallback);
+    controls.addZoomCallback(messiers_obj.update_fov);
 }
 
-function addMessiersCallback(messiers) {
-    scene.add(messiers);
+function addMessiersCallback(me) {
+    scene.add(me);
+    messiers = me;
 }
 
 function init_constellations() {
@@ -124,7 +136,6 @@ function addConstellationsCallback(lines) {
 
 function init_events() {
     controls.addMouseCallback(updatePosition);
-
 }
 
 function updatePosition(dir) {

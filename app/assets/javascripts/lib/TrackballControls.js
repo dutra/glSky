@@ -32,7 +32,7 @@ THREE.TrackballControls = function ( object, domElement ) {
     this.minDistance = 0;
     this.maxDistance = 300;
 
-    this.minFOV = 1;
+    this.minFOV = 5;
     this.maxFOV = 75;
 
     this.keys = [ 65 /*A*/, 83 /*S*/, 68 /*D*/ ];
@@ -65,7 +65,8 @@ THREE.TrackballControls = function ( object, domElement ) {
     _this.defaultFOV = this.defaultFOV || 40;
 
     _this.mouseCallbacks = []
-    
+    _this.zoomCallbacks = []
+
     // for reset
 
     this.target0 = this.target.clone();
@@ -115,7 +116,7 @@ THREE.TrackballControls = function ( object, domElement ) {
     };
 
     this.getMouseOnScreen = function ( pageX, pageY, vector ) {
-        handleCallbacks( pageX, pageY );
+        handleCallbacks("mouse")( pageX, pageY );
         return vector.set(
             ( pageX - _this.screen.left ) / _this.screen.width,
             ( pageY - _this.screen.top ) / _this.screen.height
@@ -130,7 +131,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 
         return function ( pageX, pageY, projection ) {
-            handleCallbacks( pageX, pageY );
+            handleCallbacks("mouse")( pageX, pageY );
 
             mouseOnBall.set(
                 ( pageX - _this.screen.width * 0.5 - _this.screen.left ) / (_this.screen.width*.5),
@@ -235,6 +236,7 @@ THREE.TrackballControls = function ( object, domElement ) {
                     //          _eye.multiplyScalar( factor );
                     _this.object.fov = _this.object.fov * factor;
                     _this.object.updateProjectionMatrix();
+		    handleCallbacks("zoom")(_this.object.fov);
                     //          console.log("Zoom factor: ",factor);
                 }
 
@@ -410,8 +412,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
         if ( _this.enabled === false ) return;
 
-//        event.preventDefault();
-//        event.stopPropagation();
+        //        event.preventDefault();
+        //        event.stopPropagation();
 
         if ( _state === STATE.NONE ) {
 
@@ -447,8 +449,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
         if ( _this.enabled === false ) return;
 
-//        event.preventDefault();
-//        event.stopPropagation();
+        //        event.preventDefault();
+        //        event.stopPropagation();
 
         if ( _state === STATE.ROTATE && !_this.noRotate ) {
 
@@ -470,8 +472,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
         if ( _this.enabled === false ) return;
 
-//        event.preventDefault();
-//        event.stopPropagation();
+        //        event.preventDefault();
+        //        event.stopPropagation();
 
         _state = STATE.NONE;
 
@@ -485,8 +487,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
         if ( _this.enabled === false ) return;
 
-//        event.preventDefault();
-//        event.stopPropagation();
+        //        event.preventDefault();
+        //        event.stopPropagation();
 
         var delta = 0;
 
@@ -542,8 +544,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
         if ( _this.enabled === false ) return;
 
-//        event.preventDefault();
-//        event.stopPropagation();
+        //        event.preventDefault();
+        //        event.stopPropagation();
 
         switch ( event.touches.length ) {
 
@@ -593,25 +595,40 @@ THREE.TrackballControls = function ( object, domElement ) {
 
     }
 
-    function handleCallbacks( pageX, pageY ) {
-	
-        var projector = new THREE.Projector();
-        var vector = new THREE.Vector3(
-            ( pageX / window.innerWidth ) * 2 - 1,
-                - ( pageY / window.innerHeight ) * 2 + 1,
-            0.5 );
+    function handleCallbacks( index ) {
+        callbacks = []
+        callbacks["mouse"] = function ( pageX, pageY ) {
 
-        projector.unprojectVector( vector, _this.object );
+            var projector = new THREE.Projector();
+            var vector = new THREE.Vector3(
+                ( pageX / window.innerWidth ) * 2 - 1,
+                    - ( pageY / window.innerHeight ) * 2 + 1,
+                0.5 );
 
-        var dir = vector.sub( _this.object.position ).normalize();
-        for( var i=0; i < _this.mouseCallbacks.length; i++ ) {
-	    (_this.mouseCallbacks[i]) (dir);
+            projector.unprojectVector( vector, _this.object );
+
+            var dir = vector.sub( _this.object.position ).normalize();
+            for( var i=0; i < _this.mouseCallbacks.length; i++ ) {
+                (_this.mouseCallbacks[i]) (dir);
+            }
+        }
+
+	callbacks["zoom"] = function ( fov ) {
+            for( var i=0; i < _this.zoomCallbacks.length; i++ ) {
+                (_this.zoomCallbacks[i]) (fov);
+            }
+	    
 	}
+	
+	return callbacks[index];
 
     }
 
     this.addMouseCallback = function ( callback ) {
-	_this.mouseCallbacks.push(callback);
+        _this.mouseCallbacks.push(callback);
+    }
+    this.addZoomCallback = function ( callback ) {
+        _this.zoomCallbacks.push(callback);
     }
 
     this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );

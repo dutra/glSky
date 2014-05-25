@@ -5,15 +5,15 @@ function Stars() {
     // private
     _this = this;
     _this.sphere = undefined;
-    _this.uniforms = undefined;
-    _this.attributes = undefined;
+    _this.star_uniforms = undefined;
+    _this.star_attributes = undefined;
 
     function _generate_stars(callBack) {
 
         $.getJSON( "data/stars.json", function( data ) {
             var items = [];
 
-            _this.attributes = {
+            _this.star_attributes = {
 
                 size: {type: 'f', value: [] },
                 ca:   {type: 'c', value: [] },
@@ -21,19 +21,19 @@ function Stars() {
 
             };
 
-            _this.uniforms = {
+            _this.star_uniforms = {
                 limitMag: { type: 'f', value: 4.5 },
                 color:     { type: "c", value: new THREE.Color( 0xffffff ) },
                 texture:   { type: "t", value: THREE.ImageUtils.loadTexture( '<%= image_path "textures/disc.png" %>' ) }
 
             };
 
-            _this.uniforms.texture.value.wrapS = _this.uniforms.texture.value.wrapT = THREE.RepeatWrapping;
+            _this.star_uniforms.texture.value.wrapS = _this.star_uniforms.texture.value.wrapT = THREE.RepeatWrapping;
 
             var shaderMaterial = new THREE.ShaderMaterial( {
 
-                uniforms: _this.uniforms,
-                attributes:     _this.attributes,
+                uniforms: _this.star_uniforms,
+                attributes:     _this.star_attributes,
                 vertexShader:   document.getElementById( 'star.vert' ).textContent,
                 fragmentShader: document.getElementById( 'star.frag' ).textContent,
                 transparent:true
@@ -45,9 +45,9 @@ function Stars() {
             var geometry = new THREE.Geometry();
 
             var vertices = geometry.vertices;
-            var values_size = _this.attributes.size.value;
-            var values_color = _this.attributes.ca.value;
-            var values_mag = _this.attributes.mag.value;
+            var values_size = _this.star_attributes.size.value;
+            var values_color = _this.star_attributes.ca.value;
+            var values_mag = _this.star_attributes.mag.value;
 
             console.log(vertices.length);
 
@@ -66,24 +66,24 @@ function Stars() {
 
             });
             console.dir(geometry.vertices);
-            console.dir(_this.attributes.ca.value);
+            console.dir(_this.star_attributes.ca.value);
             _this.sphere = new THREE.ParticleSystem( geometry, shaderMaterial );
 
             _this.sphere.dynamic = true;
             _this.sphere.frustrumCulled = true;
 
             callBack(_this.sphere);
+	    console.dir(_this);
             console.log("done callback");
-
 
         });
 
     }
 
     function _updateLimitMag(mag) {
-        if(_this.uniforms != undefined) {
+        if(_this.star_uniforms != undefined) {
 //            console.log("Mag: ", mag);
-            _this.uniforms.limitMag.value = mag;
+            _this.star_uniforms.limitMag.value = mag;
         }
     }
 
