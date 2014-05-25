@@ -1,0 +1,103 @@
+function Caldwells() {
+    _this = this;
+    this.generate_caldwells = _generate_caldwells;
+
+    this.update_fov = _update_fov;
+
+    _this.caldwell_attributes = undefined;
+    _this.caldwell_uniforms = undefined;
+    
+    function _generate_caldwells(callback) {
+
+        $.getJSON( "data/caldwells.json", function( data ) {
+	    console.dir(_this);
+            function getTexture() {
+
+                var canvas = document.createElement('canvas');
+                canvas.width = 32;
+                canvas.height = 32;
+
+                var ctx = canvas.getContext('2d');
+
+                var centerX = canvas.width / 2;
+                var centerY = canvas.height / 2;
+                var radius = 10;
+
+                ctx.beginPath();
+                ctx.translate(0,0);
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+		ctx.fillStyle = 'blue';
+		ctx.fill();
+		ctx.lineWidth = 1;
+		// ctx.strokeStyle = '#ffffff';
+                // ctx.setLineDash([4,6]);
+                // ctx.stroke();
+
+
+                var texture = new THREE.Texture(canvas);
+                texture.needsUpdate = true;
+                return texture;
+            }
+
+            _this.caldwell_attributes = {
+		alpha: {type: 'f', value: [] },
+                size: {type: 'f', value: [] },
+                ca:   {type: 'c', value: [] },
+            };
+
+            _this.caldwell_uniforms = {
+		fov: { type: "f", value: 45.0 },
+                color:     { type: "c", value: new THREE.Color( 0xffffff ) },
+                texture:   { type: "t", value: getTexture() }
+            };
+
+            _this.caldwell_uniforms.texture.value.wrapS = _this.caldwell_uniforms.texture.value.wrapT = THREE.RepeatWrapping;
+
+            var shaderMaterial = new THREE.ShaderMaterial( {
+
+                uniforms: _this.caldwell_uniforms,
+                attributes:     _this.caldwell_attributes,
+                vertexShader:   document.getElementById( 'caldwell.vert' ).textContent,
+                fragmentShader: document.getElementById( 'caldwell.frag' ).textContent,
+                transparent: true
+
+            });
+
+
+            var geom = new THREE.Geometry();
+            var values_size = _this.caldwell_attributes.size.value;
+	    var values_alpha = _this.caldwell_attributes.alpha.value;
+            var values_color = _this.caldwell_attributes.ca.value;
+
+
+            $.each( data, function( key, caldwell ) {
+
+
+                var particle = latLongToVector3(caldwell["co"][0], caldwell["co"][1], 100);
+                geom.vertices.push(particle);
+
+                var color = new THREE.Color( 0xffffff );
+                values_color.push( color );
+                values_size.push( caldwell["s"]*25 );
+
+		values_alpha.push(0.2);
+
+            });
+
+            var system = new THREE.ParticleSystem(geom, shaderMaterial);
+	    system.frustrumCulled = true;
+	    system.sortParticles = true;
+            callback(system);
+
+        });
+    }
+    function _update_fov(fov) {
+	// console.dir(_this.caldwell_uniforms);
+	// console.dir(_this);
+	if(_this.caldwell_uniforms != undefined) {
+	    _this.caldwell_uniforms.fov.value = fov;
+	}
+    }
+	
+
+}

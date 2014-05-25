@@ -102,6 +102,48 @@
 
 </script>
 
+<script type="x-shader/x-vertex" id="caldwell.vert">
+
+  uniform float fov;
+
+  attribute float alpha;
+  attribute float size;
+  attribute vec3 ca;
+
+  varying vec3 vColor;
+  varying float vAlpha;
+  
+  void main() {
+
+  vColor = ca;
+  vAlpha = alpha;
+  
+  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+  gl_PointSize = size * 45.0/fov;
+
+  gl_Position = projectionMatrix * mvPosition;
+  }
+
+</script>
+
+<script type="x-shader/x-fragment" id="caldwell.frag">
+
+  uniform vec3 color;
+  uniform sampler2D texture;
+  varying float vAlpha;
+  
+  varying vec3 vColor;
+
+  void main() {
+
+  gl_FragColor = vec4( vColor, vAlpha );
+  gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
+
+  }
+
+</script>
+
 
 
 <%= javascript_include_tag "gl_chart" %>
