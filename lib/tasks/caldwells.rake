@@ -15,8 +15,12 @@ def process_caldwell
   CSV.foreach("db/data/caldwells.csv", headers: true) do | row |
     c = row['c']
     tipo = row['Tipo']
-    ra = (row['ra'].to_f/24*360).round(4)
-    dec = row['dec'].to_f
+    ra = row['ra'].split
+    ra =(ra[0].to_f/24*360) + (ra[1].to_f/60)
+    ra = ra.round(4)
+    dec = row['dec'].split
+    dec = dec[0].to_f + dec[1].to_f/60.0
+    dec = dec.round(4)
     mag = row['mag'].to_f
     name = row['name']
     size = row['size']

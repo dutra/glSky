@@ -28,7 +28,7 @@ function Caldwells() {
                 ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
 		ctx.fillStyle = 'blue';
 		ctx.fill();
-		ctx.lineWidth = 1;
+//		ctx.lineWidth = 1;
 		// ctx.strokeStyle = '#ffffff';
                 // ctx.setLineDash([4,6]);
                 // ctx.stroke();
@@ -73,7 +73,7 @@ function Caldwells() {
             $.each( data, function( key, caldwell ) {
 
 
-                var particle = latLongToVector3(caldwell["co"][0], caldwell["co"][1], 100);
+                var particle = latLongToVector3(caldwell["co"][0], caldwell["co"][1], 100,1);
                 geom.vertices.push(particle);
 
                 var color = new THREE.Color( 0xffffff );
