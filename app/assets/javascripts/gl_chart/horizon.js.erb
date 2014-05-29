@@ -1,0 +1,21 @@
+function Horizon() {
+    _this = this;
+    _this.horizon = undefined;
+    this.generate_horizon = _generate_horizon;
+    this.set_zenith = _set_zenith;
+    function _generate_horizon() {
+	var geometry = new THREE.SphereGeometry( 95, 32, 32, 0, Math.PI, 0, Math.PI);
+	var material = new THREE.MeshBasicMaterial( {color: 0x122607} );
+	material.side = THREE.BackSide;
+//	material.side = THREE.DoubleSide;
+	_this.horizon = new THREE.Mesh( geometry, material );
+//	_this.horizon.lookAt(new THREE.Vector3(1, 0, 0).negate());
+	return _this.horizon;
+    }
+
+    function _set_zenith(lat, lon) {
+	_this.horizon.lookAt(latLongToVector3(lat, lon, 1).negate());
+	
+    }
+
+}

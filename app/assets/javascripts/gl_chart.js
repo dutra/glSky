@@ -3,4 +3,5 @@
 //= require ./gl_chart/constellations.js
 //= require ./gl_chart/messiers.js
 //= require ./gl_chart/caldwells.js
+//= require ./gl_chart/horizon.js
 //= require ./gl_chart/main.js

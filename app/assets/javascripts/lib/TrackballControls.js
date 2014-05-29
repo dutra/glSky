@@ -48,7 +48,7 @@ THREE.TrackballControls = function ( object, domElement ) {
     var _state = STATE.NONE,
     _prevState = STATE.NONE,
 
-    _eye = new THREE.Vector3(),
+    _eye = new THREE.Vector3(0,0, 1),
 
     _rotateStart = new THREE.Vector3(),
     _rotateEnd = new THREE.Vector3(),

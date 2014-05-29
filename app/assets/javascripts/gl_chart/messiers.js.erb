@@ -73,7 +73,7 @@ function Messiers() {
             $.each( data, function( key, messier ) {
 
 
-                var particle = latLongToVector3(messier["co"][0], messier["co"][1], 100, 2);
+                var particle = latLongToVector3(messier["co"][0], messier["co"][1], 100, 4);
                 geom.vertices.push(particle);
 
                 var color = new THREE.Color( 0xffffff );
