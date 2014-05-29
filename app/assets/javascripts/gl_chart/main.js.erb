@@ -1,7 +1,7 @@
 
-var scene, camera, renderer, clock, controls, scale, stats, gui;
-var gui_params;
-var stars, constellation_lines, messiers, caldwells, horizon;
+// var scene, camera, renderer, clock, controls, scale, stats, gui;
+// //var gui_params;
+// var stars, constellation_lines, messiers, caldwells, horizon;
 function init() {
 
     console.log(vector3ToLatLong(new THREE.Vector3(0,0,1)));
@@ -28,6 +28,7 @@ function init() {
 
     window.addEventListener( 'resize', onWindowResize, false );
 
+    init_stars();
     init_controller();
     init_elements();
     init_events();
@@ -44,51 +45,6 @@ function init_controller() {
     controls.target = new THREE.Vector3(0,0,-1);
 }
 
-function init_gui() {
-    gui = new dat.GUI();
-
-    gui_params = {
-        mag: 4.5,
-        constellations: true,
-	messiers: true,
-	caldwells: true
-    }
-
-    gui.add(gui_params, 'mag').min(0.0).max(8.0).step(0.5)
-	.name("Magnitude")
-        .onChange(function(mag) {
-            if(stars != undefined)
-                stars.updateLimitMag(gui_params.mag);
-        });
-    gui.add(gui_params, 'constellations')
-	.name("Constellations")
-        .onChange(function(value) {
-            if(value)
-                scene.add(constellation_lines);
-            else
-                scene.remove(constellation_lines);
-        });
-    gui.add(gui_params, 'messiers')
-	.name("Messier")
-        .onChange(function(value) {
-            if(value)
-                scene.add(messiers);
-            else
-                scene.remove(messiers);
-        });
-    gui.add(gui_params, 'caldwells')
-	.name("Caldwell")
-        .onChange(function(value) {
-            if(value)
-                scene.add(caldwells);
-            else
-                scene.remove(caldwells);
-        });
-
-    
-
-
-}
 
 function onWindowResize() {
 
@@ -120,6 +76,8 @@ function init_horizon() {
     
     console.log("added horizon");
     console.dir(horizon);
+    horizon.set_zenith(-21, -42);
+
 }
 
 
@@ -161,7 +119,6 @@ function addCaldwellsCallback(ca) {
 function init_constellations() {
     constellations = new Constellations();
     constellations.generate_constellations(addConstellationsCallback);
-
 }
 
 function addConstellationsCallback(lines) {
@@ -177,8 +134,8 @@ function init_events() {
 }
 
 function updatePosition(dir) {
-        console.log("UpdatePosition called");
-        console.log(vector3ToLatLong(dir));
+        // console.log("UpdatePosition called");
+        // console.log(vector3ToLatLong(dir));
 }
 
 
@@ -216,9 +173,9 @@ function render() {
     //    attributes.size.needsUpdate = true;
 
 //   if(lon > 360) lon = 0;
-    horizon.set_zenith(0, lon);
+  //  horizon.set_zenith(0, lon);
     lon += 0.1;
-    
+   
     
 
     renderer.render(scene, camera);

@@ -1,7 +1,6 @@
 function Constellations() {
     _this = this;
     this.generate_constellations = _generate_constellations;
-
     _this.lines = undefined;
 
     function _generate_constellations(callback) {
@@ -19,12 +18,11 @@ function Constellations() {
                 geometry.vertices.push(endV);
 
             });
-	    _this.lines = new THREE.Line(geometry, material);
-	    _this.lines.type = THREE.LinePieces;
+            _this.lines = new THREE.Line(geometry, material);
+            _this.lines.type = THREE.LinePieces;
             callback(_this.lines);
 
         });
     }
-
-
 }
+
