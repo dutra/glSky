@@ -1,6 +1,10 @@
-function Horizon() {
+function Horizon(scene) {
+
     _this = this;
     _this.horizon = undefined;
+    _this.scene = scene;
+
+    this.show = _show;
     this.generate_horizon = _generate_horizon;
     this.set_zenith = _set_zenith;
     function _generate_horizon() {
@@ -13,7 +17,7 @@ function Horizon() {
 
         _this.horizon = new THREE.Mesh( geometry, material );
         //      _this.horizon.lookAt(new THREE.Vector3(1, 0, 0).negate());
-        return _this.horizon;
+        _this.scene.add(_this.horizon);
     }
 
     function _set_zenith(lat, lon) {
@@ -21,5 +25,12 @@ function Horizon() {
         _this.horizon.lookAt(latLongToVector3(lat, lon, 1).negate());
 
     }
+    function _show(value) {
+	if(value)
+	    _this.scene.add(_this.horizon);
+	else
+	    _this.scene.remove(_this.horizon);
+    }
+    
 
 }

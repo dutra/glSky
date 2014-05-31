@@ -11,6 +11,7 @@ function GUI(callbacks) {
     var updateLocation = callbacks.updateLocation;
     var updateDateTime = callbacks.updateDateTime;
     var showCoordinateSystem = callbacks.showCoordinateSystem;
+    var showHorizon = callbacks.showHorizon;
     
     var gui_params, gui;
     
@@ -25,6 +26,7 @@ function GUI(callbacks) {
             messiers: true,
             caldwells: true,
 	    coordinate_system: false,
+	    horizon: true,
             loc: 0,
             time: date.getHours()+':'+date.getMinutes(),
             date: date.getMonth()+'/'+date.getDay()+'/'+date.getFullYear(),
@@ -67,12 +69,17 @@ function GUI(callbacks) {
             .name("Location")
             .onChange(function(value) {
                 if(value==0)
-                    updateLocation(-21, -42);
+                    updateLocation(-21.12, -42.94);
                 if(value==1)
 		    updateLocation(42.33, -71.02);
             });
-	updateLocation(-21, -42);
-        //gloc.open();
+	updateLocation(-21.12, -42.94);
+	gloc.add(gui_params, 'horizon')
+	.name("Show Horizon")
+	.onChange(function(value) {
+	    showHorizon(value);
+	});
+	//gloc.open();
 
         var gtime = gui.addFolder('Time');
         gtime.add(gui_params, 'time')
@@ -90,7 +97,7 @@ function GUI(callbacks) {
 		console.log(date);
 		updateDateTime({month: date[0]-1, day: date[1], year: date[2]});
             });
-	gtime.add(gui_params, 'now').name("Reset Date");;
+	gtime.add(gui_params, 'now').name("Reset Date");
         //gtime.open();
     }
 

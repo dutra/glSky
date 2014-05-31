@@ -8,6 +8,7 @@ function SceneManager (scene, callbacks) {
     this.showCaldwells = _show_caldwells;
     this.showCoordinateSystem = _show_coordinate_system;
     this.updateHorizon = _update_horizon;
+    this.showHorizon = _show_horizon;
     
     // private
     var _this = this;
@@ -28,10 +29,9 @@ function SceneManager (scene, callbacks) {
 
     function init_horizon() {
 
-        horizon = new Horizon();
-        var h = horizon.generate_horizon();
-        scene.add(h);
-
+        horizon = new Horizon(scene);
+	horizon.generate_horizon();
+        
         var axisHelper = new THREE.AxisHelper( 5 );
         scene.add(axisHelper);
 
@@ -81,6 +81,9 @@ function SceneManager (scene, callbacks) {
     }
     function _show_caldwells(value) {
 	caldwells.show(value);
+    }
+    function _show_horizon(value) {
+	horizon.show(value);
     }
     function _update_horizon(lat, lon) {
 //	console.log(lon);
