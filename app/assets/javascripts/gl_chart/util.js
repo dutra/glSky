@@ -33,4 +33,53 @@ function radiansToDegrees(radians) {
 function degreesToRadians(degrees) {
     return degrees * Math.PI / 180;
 }
-    
+
+function isValidDate(d) {
+    if ( Object.prototype.toString.call(d) !== "[object Date]" )
+        return false;
+    return !isNaN(d.getTime());
+}
+
+Date.prototype.getJulian = function() {
+    return Math.floor((this / 86400000) -
+                      (this.getTimezoneOffset()/1440) + 2440587.5);
+}
+
+// Add method to Date which returns the Local Side Real Time in Longitude given longitude
+Date.prototype.getLocalSideRealInLng = function(longitude) {
+    var s = this.getJulian() - 2451545;
+    var t = s/36525;
+    var t0 = 6.697374558 + (2400.051336 * t) + (0.000025862 * t * t);
+    t0 = Math.abs(t0%24);
+
+    var ut = this.getUTCHours() + this.getUTCMinutes() / 60 + this.getUTCSeconds() / 3600;
+    ut *= 1.002737909;
+    var sidereal = ut+t0;
+    sidereal = Math.abs(sidereal%24);
+
+    var hourOffset = longitude / 360 * 24;
+    sidereal += hourOffset;
+
+    realHours = sidereal - sidereal%1;
+
+    realMinutes = (sidereal%1)*60;
+    return realHours/24*360+realMinutes/60;
+}
+
+Date.prototype.getLocalSideReal = function(longitude) {
+    var s = this.getJulian() - 2451545;
+    var t = s/36525;
+    var t0 = 6.697374558 + (2400.051336 * t) + (0.000025862 * t * t);
+    t0 = Math.abs(t0%24);
+    var ut = this.getUTCHours() + this.getUTCMinutes()/60;
+    ut *= 1.002737909;
+    sidereal = ut+t0;
+    sidereal = Math.abs(sidereal%24);
+    var hourOffset = longitude / 360 * 24;
+    sidereal += hourOffset;
+
+    realHours = sidereal - sidereal%1;
+
+    realMinutes = (sidereal%1)*60;
+    return ""+realHours+"h "+realMinutes.toFixed(0)+"m";
+}

@@ -1,0 +1,78 @@
+function SceneManager (scene, callbacks) {
+    // interface
+    this.initElements = _init_elements;
+    this.updateLimitMag = _update_limit_mag;
+
+    this.showConstellations = _show_constellations;
+    this.showMessiers = _show_messiers;
+    this.showCaldwells = _show_caldwells;
+    this.updateHorizon = _update_horizon;
+    
+    // private
+    var _this = this;
+    var scene = scene;
+   
+    var horizon, stars, messiers, caldwells, constellations;
+    var addZoomCallback = callbacks.addZoomCallback;
+    
+    
+    function _init_elements() {
+        init_caldwells();
+        init_messiers();
+        init_constellations();
+        init_stars();
+        init_horizon();
+    }
+
+    function init_horizon() {
+
+        horizon = new Horizon();
+        var h = horizon.generate_horizon();
+        scene.add(h);
+
+        var axisHelper = new THREE.AxisHelper( 5 );
+        scene.add(axisHelper);
+
+        horizon.set_zenith(-21, -42);
+
+    }
+
+
+    function init_stars() {
+        stars = new Stars(scene);
+        stars.generate_stars();
+    }
+    function _update_limit_mag(mag) {
+	stars.updateLimitMag(mag);
+    }
+    
+    function init_messiers() {
+        messiers = new Messiers(scene);
+        messiers.generate_messiers();
+        addZoomCallback(messiers.update_fov);
+    }
+
+    function init_caldwells() {
+        caldwells = new Caldwells(scene);
+        caldwells.generate_caldwells();
+        addZoomCallback(caldwells.update_fov);
+    }
+
+    function init_constellations() {
+        constellations = new Constellations(scene);
+        constellations.generate_constellations();
+    }
+    function _show_constellations(value) {
+	constellations.showConstellations(value);
+    }
+    function _show_messiers(value) {
+	messiers.showMessiers(value);
+    }
+    function _show_caldwells(value) {
+	caldwells.showCaldwells(value);
+    }
+    function _update_horizon(lat, lon) {
+//	console.log(lon);
+	horizon.set_zenith(lat, lon);
+    }
+}

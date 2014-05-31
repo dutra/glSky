@@ -2,11 +2,16 @@
 // var scene, camera, renderer, clock, controls, scale, stats, gui;
 // //var gui_params;
 // var stars, constellation_lines, messiers, caldwells, horizon;
-function init() {
 
-    console.log(vector3ToLatLong(new THREE.Vector3(0,0,1)));
-    console.log(latLongToVector3(90, 100, 1));
-    clock = new THREE.Clock();
+
+var camera, renderer, stats, gui;
+var tclock, clock;
+var sm;
+
+var latitude = 0;
+var longitude = 0;
+
+function init() {
 
     camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.z = -50;
@@ -16,26 +21,37 @@ function init() {
     renderer = new THREE.WebGLRenderer({ antialias: true, precision: "lowp", alpha: false, premultipliedAlpha: false, stencil: false });
     renderer.setSize( window.innerWidth , window.innerHeight );
 
-
-
     $('#chart').append( renderer.domElement );
 
     stats = new Stats();
     stats.domElement.style.position = 'absolute';
     stats.domElement.style.top = '0px';
     $('#chart').append( stats.domElement );
-    //
+
 
     window.addEventListener( 'resize', onWindowResize, false );
 
-    init_stars();
     init_controller();
-    init_elements();
+
+    // start Scene Manager to manage elements
+    sm = new SceneManager(scene, { addZoomCallback: controls.addZoomCallback });
+    sm.initElements();
+    init_clock();
+
     init_events();
     init_gui();
 
+
 }
 
+// starts three.js clock and our own clock
+function init_clock() {
+    clock = new Clock(new Date());
+    tclock = new THREE.Clock();
+
+}
+
+// starts mouse and touch controller
 function init_controller() {
     controls = new THREE.TrackballControls(camera, $('#chart')[0]);
     controls.noPan = true;
@@ -45,6 +61,17 @@ function init_controller() {
     controls.target = new THREE.Vector3(0,0,-1);
 }
 
+// starts DAT gui with callbacks for when gui variables change
+function init_gui() {
+    gui = new GUI({ updateLimitMag: sm.updateLimitMag,
+                    showConstellations: sm.showConstellations,
+                    showMessiers: sm.showMessiers,
+                    showCaldwells: sm.showCaldwells,
+                    updateLocation: updateLocation,
+                    updateDateTime: clock.updateDateTime
+                  });
+    gui.generate_gui();
+}
 
 function onWindowResize() {
 
@@ -55,97 +82,37 @@ function onWindowResize() {
 
 }
 
-function init_elements() {
-    init_caldwells();
-    init_messiers();
-    init_constellations();
-    init_stars();
-    init_horizon();
 
-
-}
-
-function init_horizon() {
-
-    horizon = new Horizon();
-    var h = horizon.generate_horizon();
-    scene.add(h);
-
-    var axisHelper = new THREE.AxisHelper( 5 );
-    scene.add(axisHelper);
-    
-    console.log("added horizon");
-    console.dir(horizon);
-    horizon.set_zenith(-21, -42);
-
-}
-
-
-function init_stars() {
-    stars = new Stars();
-    stars.generate_stars(addStarsCallback);
-}
-
-function addStarsCallback(sphere) {
-    console.log("Added sphere");
-    scene.add(sphere);
-    //    renderer.render(scene, camera);
-
-}
-function init_messiers() {
-    var messiers_obj = new Messiers();
-    console.dir(messiers_obj);
-    messiers_obj.generate_messiers(addMessiersCallback);
-    controls.addZoomCallback(messiers_obj.update_fov);
-}
-
-function addMessiersCallback(me) {
-    scene.add(me);
-    messiers = me;
-}
-
-function init_caldwells() {
-    var caldwells_obj = new Caldwells();
-    console.dir(caldwells_obj);
-    caldwells_obj.generate_caldwells(addCaldwellsCallback);
-    controls.addZoomCallback(caldwells_obj.update_fov);
-}
-
-function addCaldwellsCallback(ca) {
-    scene.add(ca);
-    caldwells = ca;
-}
-
-function init_constellations() {
-    constellations = new Constellations();
-    constellations.generate_constellations(addConstellationsCallback);
-}
-
-function addConstellationsCallback(lines) {
-    console.log("Added constellation lines");
-    constellation_lines = lines;
-    scene.add(lines);
-
-
-}
 
 function init_events() {
     controls.addMouseCallback(updatePosition);
 }
 
 function updatePosition(dir) {
-        // console.log("UpdatePosition called");
-        // console.log(vector3ToLatLong(dir));
+    // console.log("UpdatePosition called");
+    // console.log(vector3ToLatLong(dir));
 }
 
 
-
+var elapsedTime = 0;
 function animate() {
 
     requestAnimationFrame( animate );
 
-    var delta = clock.getDelta();
+    var delta = tclock.getDelta();
     controls.update(delta);
+
+    // update clock and horizon every second
+    if(elapsedTime > 0.500) {
+        clock.updateDateTime(new Date(clock.getTime() + elapsedTime * 1000));
+
+        updateHorizon();
+	gui.updateDateTime(new Date(clock.getTime()));
+        elapsedTime = 0;
+
+    }
+    elapsedTime += delta;
+
 
 
     render();
@@ -153,35 +120,21 @@ function animate() {
 
 }
 
-var lon = 0;
 function render() {
-
-
-    //    var time = Date.now() * 0.005;
-
-    //    sphere.rotation.y = 0.02 * time;
-    //    sphere.rotation.z = 0.02 * time;
-
-    // for( var i = 0; i < attributes.size.value.length; i ++ ) {
-
-    //     if ( i < vc1 )
-    //         attributes.size.value[ i ] = 16 + 12 * Math.sin( 0.1 * i + time );
-
-
-    // }
-
-    //    attributes.size.needsUpdate = true;
-
-//   if(lon > 360) lon = 0;
-  //  horizon.set_zenith(0, lon);
-    lon += 0.1;
-   
-    
-
     renderer.render(scene, camera);
-
 }
 
+function updateLocation(lat, lon) {
+    console.log("Lat: ", lat, " Long: ", lon);
+    latitude = lat;
+    longitude = lon;
+}
+
+function updateHorizon() {
+    // console.log(clock.date);
+    // console.log(clock.date.getLocalSideReal(longitude));
+    sm.updateHorizon(latitude, clock.getLongitude(longitude));
+}
 
 init();
 animate();

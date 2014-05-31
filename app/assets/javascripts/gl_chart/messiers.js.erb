@@ -1,13 +1,16 @@
-function Messiers() {
-    _this = this;
+function Messiers(scene) {
+    var _this = this;
     this.generate_messiers = _generate_messiers;
 
     this.update_fov = _update_fov;
-
+    this.showMessiers = _show_messiers;
+    
     _this.messier_attributes = undefined;
     _this.messier_uniforms = undefined;
+
+    _this.scene = scene;
     
-    function _generate_messiers(callback) {
+    function _generate_messiers() {
 
         $.getJSON( "data/messiers.json", function( data ) {
 	    console.dir(_this);
@@ -26,7 +29,7 @@ function Messiers() {
                 ctx.beginPath();
                 ctx.translate(0,0);
                 ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-		ctx.fillStyle = 'green';
+		ctx.fillStyle = 'red';
 		ctx.fill();
 		ctx.lineWidth = 1;
 		// ctx.strokeStyle = '#ffffff';
@@ -91,13 +94,19 @@ function Messiers() {
 
         });
     }
+    function callback(messiers) {
+	_this.scene.add(messiers);
+	_this.messiers = messiers;
+    }
     function _update_fov(fov) {
-	// console.dir(_this.messier_uniforms);
-	// console.dir(_this);
 	if(_this.messier_uniforms != undefined) {
 	    _this.messier_uniforms.fov.value = fov;
 	}
     }
-	
-
+    function _show_messiers(value) {
+	if(value)
+	    _this.scene.add(_this.messiers);
+	else
+	    _this.scene.remove(_this.messiers);
+    }
 }

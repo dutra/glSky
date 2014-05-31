@@ -5,4 +5,6 @@
 //= require ./gl_chart/caldwells.js
 //= require ./gl_chart/horizon.js
 //= require ./gl_chart/gui.js
+//= require ./gl_chart/clock.js
+//= require ./gl_chart/scene_manager.js
 //= require ./gl_chart/main.js

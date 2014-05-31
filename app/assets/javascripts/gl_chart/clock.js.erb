@@ -1,0 +1,48 @@
+function Clock(date) {
+    var _this = this;
+    this.date = date;
+    this.updateDateTime = _update_date_time;
+    this.getTime = _get_time;
+    this.getLongitude = _get_longitude;
+
+    function _update_date_time(date) {
+        if(date instanceof Date) {
+            _this.date = date;
+        } else {
+
+            var day = date.day,
+            month = date.month,
+            year = date.year,
+            hour = date.hour,
+            minute = date.minute;
+
+	
+	    
+            if(typeof day != 'undefined')
+                _this.date.setDate(day);
+            if(typeof month != 'undefined')
+                _this.date.setMonth(month);
+            if(typeof year != 'undefined')
+                _this.date.setYear(year);
+            if(typeof hour != 'undefined')
+                _this.date.setHours(hour);
+            if(typeof minute != 'undefined')
+                _this.date.setMinutes(minute);
+	    console.log(_this.date);
+	}
+    }
+
+    function _reset(date) {
+        _this.date = date;
+
+    }
+
+    function _get_longitude(lon) {
+        return _this.date.getLocalSideRealInLng(lon);
+    }
+
+    function _get_time() {
+        return _this.date.getTime();
+    }
+
+}

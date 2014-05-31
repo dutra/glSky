@@ -1,14 +1,16 @@
-function Stars() {
+function Stars(scene) {
     // public methods
     this.generate_stars = _generate_stars;
     this.updateLimitMag = _updateLimitMag;
+
     // private
-    _this = this;
+    var _this = this;
+    _this.scene = scene;
     _this.sphere = undefined;
     _this.star_uniforms = undefined;
     _this.star_attributes = undefined;
 
-    function _generate_stars(callBack) {
+    function _generate_stars() {
 
         $.getJSON( "data/stars.json", function( data ) {
             var items = [];
@@ -49,9 +51,6 @@ function Stars() {
             var values_color = _this.star_attributes.ca.value;
             var values_mag = _this.star_attributes.mag.value;
 
-            console.log(vertices.length);
-
-
             $.each( data, function( key, star ) {
 
                 var color = new THREE.Color( star["c"] );
@@ -65,17 +64,14 @@ function Stars() {
 
 
             });
-            console.dir(geometry.vertices);
-            console.dir(_this.star_attributes.ca.value);
             _this.sphere = new THREE.ParticleSystem( geometry, shaderMaterial );
 
             _this.sphere.dynamic = true;
             _this.sphere.frustrumCulled = true;
 
-            callBack(_this.sphere);
+           add_stars_callback(_this.sphere);
 	    console.dir(_this);
-            console.log("done callback");
-
+            
         });
 
     }
@@ -86,5 +82,11 @@ function Stars() {
             _this.star_uniforms.limitMag.value = mag;
         }
     }
+    
+    function add_stars_callback(sphere) {
+        scene.add(sphere);
+        //    renderer.render(scene, camera);
+    }
 
+    
 }

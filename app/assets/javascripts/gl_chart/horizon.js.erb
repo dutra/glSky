@@ -5,7 +5,7 @@ function Horizon() {
     this.set_zenith = _set_zenith;
     function _generate_horizon() {
         var geometry = new THREE.SphereGeometry( 95, 32, 32, 0, Math.PI, 0, Math.PI);
-        var material = new THREE.MeshBasicMaterial( {color: 0x122607} );
+        var material = new THREE.MeshBasicMaterial( {color: 0x002307} );
 	material.side = THREE.BackSide;
         //      material.side = THREE.DoubleSide;
 
@@ -17,6 +17,7 @@ function Horizon() {
     }
 
     function _set_zenith(lat, lon) {
+//	console.log(lon);
         _this.horizon.lookAt(latLongToVector3(lat, lon, 1).negate());
 
     }

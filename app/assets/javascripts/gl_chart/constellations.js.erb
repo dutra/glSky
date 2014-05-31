@@ -1,9 +1,12 @@
-function Constellations() {
-    _this = this;
+function Constellations(scene) {
+    var _this = this;
     this.generate_constellations = _generate_constellations;
-    _this.lines = undefined;
-
-    function _generate_constellations(callback) {
+    this.showConstellations = _show_constellations;
+    
+    var lines = undefined;
+    var scene = scene;    
+    
+    function _generate_constellations() {
         $.getJSON( "data/constellations.json", function( data ) {
 
             var geometry = new THREE.Geometry();
@@ -20,9 +23,20 @@ function Constellations() {
             });
             _this.lines = new THREE.Line(geometry, material);
             _this.lines.type = THREE.LinePieces;
-            callback(_this.lines);
+            add_constellations_callback(_this.lines);
 
         });
+    }
+
+    function add_constellations_callback(l) {
+	lines = l;
+	scene.add(lines);
+    }
+    function _show_constellations(value) {
+	if(value)
+	    scene.add(_this.lines);
+	else
+	    scene.remove(_this.lines);
     }
 }
 

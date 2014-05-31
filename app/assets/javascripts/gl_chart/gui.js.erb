@@ -1,54 +1,94 @@
-function init_gui() {
+function GUI(callbacks) {
+    var _this = this;
 
-    gui = new dat.GUI();
+    this.generate_gui = _generate_gui;
+    this.updateDateTime = _update_date_time;
+    
+    var updateLimitMag = callbacks.updateLimitMag;
+    var showConstellations = callbacks.showConstellations;
+    var showMessiers = callbacks.showMessiers;
+    var showCaldwells = callbacks.showCaldwells;
+    var updateLocation = callbacks.updateLocation;
+    var updateDateTime = callbacks.updateDateTime;
 
-    gui_params = {
-        mag: 4.5,
-        constellations: true,
-        messiers: true,
-        caldwells: true,
-        loc: 0
+    var gui_params, gui;
+    
+    function _generate_gui() {
+	var date = new Date();
+
+        gui = new dat.GUI();
+
+        gui_params = {
+            mag: 4.5,
+            constellations: true,
+            messiers: true,
+            caldwells: true,
+            loc: 0,
+            time: date.getHours()+':'+date.getMinutes(),
+            date: date.getMonth()+'/'+date.getDay()+'/'+date.getFullYear(),
+	    now: function() {
+		updateDateTime(new Date());
+	    }
+	 
+	}
+
+        gui.add(gui_params, 'mag').min(0.0).max(8.0).step(0.5)
+            .name("Magnitude")
+            .onChange(function(mag) {
+                updateLimitMag(gui_params.mag);
+            });
+        gui.add(gui_params, 'constellations')
+            .name("Constellations")
+            .onChange(function(value) {
+                showConstellations(value);
+            });
+        gui.add(gui_params, 'messiers')
+            .name("Messier")
+            .onChange(function(value) {
+                showMessiers(value);
+            });
+        gui.add(gui_params, 'caldwells')
+            .name("Caldwell")
+            .onChange(function(value) {
+                showCaldwells(value)
+            });
+
+        var gloc = gui.addFolder('Location');
+        gloc.add(gui_params, 'loc', { 'Uba, MG, Brazil': 0, 'Boston, MA, US': 1 })
+            .name("Location")
+            .onChange(function(value) {
+                if(value==0)
+                    updateLocation(-21, -42);
+                if(value==1)
+		    updateLocation(42.33, -71.02);
+            });
+	updateLocation(-21, -42);
+        //gloc.open();
+
+        var gtime = gui.addFolder('Time');
+        gtime.add(gui_params, 'time')
+            .name('Time')
+	    .listen()
+            .onFinishChange(function(value) {
+		var time = value.split(':');
+		updateDateTime({hour: time[0], minute: time[1]});
+            });
+        gtime.add(gui_params, 'date')
+            .name('Date')
+	    .listen()
+            .onFinishChange(function(value) {
+		var date = value.split('/');
+		console.log(date);
+		updateDateTime({month: date[0]-1, day: date[1], year: date[2]});
+            });
+	gtime.add(gui_params, 'now').name("Reset Date");;
+        //gtime.open();
     }
 
-    gui.add(gui_params, 'mag').min(0.0).max(8.0).step(0.5)
-        .name("Magnitude")
-        .onChange(function(mag) {
-            if(stars != undefined)
-                stars.updateLimitMag(gui_params.mag);
-        });
-    gui.add(gui_params, 'constellations')
-        .name("Constellations")
-        .onChange(function(value) {
-            if(value)
-                scene.add(constellation_lines);
-            else
-                scene.remove(constellation_lines);
-        });
-    gui.add(gui_params, 'messiers')
-        .name("Messier")
-        .onChange(function(value) {
-            if(value)
-                scene.add(messiers);
-            else
-                scene.remove(messiers);
-        });
-    gui.add(gui_params, 'caldwells')
-        .name("Caldwell")
-        .onChange(function(value) {
-            if(value)
-                scene.add(caldwells);
-            else
-                scene.remove(caldwells);
-        });
+    function _update_date_time(date) {
+	gui_params.time = date.getHours()+':'+date.getMinutes();
+        gui_params.date = (date.getMonth()+1)+'/'+date.getDate()+'/'+date.getFullYear();
 
-    var gloc = gui.addFolder('Location');
-    gloc.add(gui_params, 'loc', { 'Uba, MG, Brazil': 0, 'Boston, MA, US': 1 })
-        .name("Location")
-        .onChange(function(value) {
-            if(value==0)
-                horizon.set_zenith(-21, -42);
-            if(value==1)
-                horizon.set_zenith(42, -71);
-        });
-    gloc.open();
+    }
+
 }

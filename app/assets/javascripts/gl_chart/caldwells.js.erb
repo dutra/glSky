@@ -1,13 +1,16 @@
-function Caldwells() {
-    _this = this;
+function Caldwells(scene) {
+    var _this = this;
     this.generate_caldwells = _generate_caldwells;
 
+    this.showCaldwells = _show_caldwells;
     this.update_fov = _update_fov;
 
     _this.caldwell_attributes = undefined;
     _this.caldwell_uniforms = undefined;
-    
-    function _generate_caldwells(callback) {
+
+    _this.scene = scene;
+ 
+    function _generate_caldwells() {
 
         $.getJSON( "data/caldwells.json", function( data ) {
 	    console.dir(_this);
@@ -87,17 +90,25 @@ function Caldwells() {
             var system = new THREE.ParticleSystem(geom, shaderMaterial);
 	    system.frustrumCulled = true;
 	    system.sortParticles = true;
-            callback(system);
+            add_caldwells_callback(system);
 
         });
     }
+    function add_caldwells_callback(caldwells) {
+	_this.scene.add(caldwells);
+	_this.caldwells = caldwells;
+    }
     function _update_fov(fov) {
-	// console.dir(_this.caldwell_uniforms);
-	// console.dir(_this);
 	if(_this.caldwell_uniforms != undefined) {
 	    _this.caldwell_uniforms.fov.value = fov;
 	}
     }
-	
+    function _show_caldwells(value) {
+	if(value)
+	    _this.scene.add(_this.caldwells);
+	else
+	    _this.scene.remove(_this.caldwells);
+    }
+
 
 }
