@@ -3,7 +3,7 @@ function Messiers(scene) {
     this.generate_messiers = _generate_messiers;
 
     this.update_fov = _update_fov;
-    this.showMessiers = _show_messiers;
+    this.show = _show;
     
     _this.messier_attributes = undefined;
     _this.messier_uniforms = undefined;
@@ -76,7 +76,7 @@ function Messiers(scene) {
             $.each( data, function( key, messier ) {
 
 
-                var particle = latLongToVector3(messier["co"][0], messier["co"][1], 100, 4);
+                var particle = latLongToVector3(messier["co"][0], messier["co"][1], 100, 2);
                 geom.vertices.push(particle);
 
                 var color = new THREE.Color( 0xffffff );
@@ -103,7 +103,7 @@ function Messiers(scene) {
 	    _this.messier_uniforms.fov.value = fov;
 	}
     }
-    function _show_messiers(value) {
+    function _show(value) {
 	if(value)
 	    _this.scene.add(_this.messiers);
 	else

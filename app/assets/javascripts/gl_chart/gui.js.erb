@@ -10,7 +10,8 @@ function GUI(callbacks) {
     var showCaldwells = callbacks.showCaldwells;
     var updateLocation = callbacks.updateLocation;
     var updateDateTime = callbacks.updateDateTime;
-
+    var showCoordinateSystem = callbacks.showCoordinateSystem;
+    
     var gui_params, gui;
     
     function _generate_gui() {
@@ -23,6 +24,7 @@ function GUI(callbacks) {
             constellations: true,
             messiers: true,
             caldwells: true,
+	    coordinate_system: false,
             loc: 0,
             time: date.getHours()+':'+date.getMinutes(),
             date: date.getMonth()+'/'+date.getDay()+'/'+date.getFullYear(),
@@ -32,27 +34,34 @@ function GUI(callbacks) {
 	 
 	}
 
-        gui.add(gui_params, 'mag').min(0.0).max(8.0).step(0.5)
+	var gelements = gui.addFolder('Elements');
+        gelements.add(gui_params, 'mag').min(0.0).max(8.0).step(0.5)
             .name("Magnitude")
             .onChange(function(mag) {
                 updateLimitMag(gui_params.mag);
             });
-        gui.add(gui_params, 'constellations')
+        gelements.add(gui_params, 'constellations')
             .name("Constellations")
             .onChange(function(value) {
                 showConstellations(value);
             });
-        gui.add(gui_params, 'messiers')
+        gelements.add(gui_params, 'messiers')
             .name("Messier")
             .onChange(function(value) {
                 showMessiers(value);
             });
-        gui.add(gui_params, 'caldwells')
+        gelements.add(gui_params, 'caldwells')
             .name("Caldwell")
             .onChange(function(value) {
                 showCaldwells(value)
             });
-
+	gelements.add(gui_params, 'coordinate_system')
+	    .name('Coordinate System')
+	    .onChange(function(value) {
+		showCoordinateSystem(value);
+	    });
+	showCoordinateSystem(false);
+	
         var gloc = gui.addFolder('Location');
         gloc.add(gui_params, 'loc', { 'Uba, MG, Brazil': 0, 'Boston, MA, US': 1 })
             .name("Location")

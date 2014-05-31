@@ -6,13 +6,14 @@ function SceneManager (scene, callbacks) {
     this.showConstellations = _show_constellations;
     this.showMessiers = _show_messiers;
     this.showCaldwells = _show_caldwells;
+    this.showCoordinateSystem = _show_coordinate_system;
     this.updateHorizon = _update_horizon;
     
     // private
     var _this = this;
     var scene = scene;
    
-    var horizon, stars, messiers, caldwells, constellations;
+    var horizon, stars, messiers, caldwells, constellations, coordinate_system;
     var addZoomCallback = callbacks.addZoomCallback;
     
     
@@ -22,6 +23,7 @@ function SceneManager (scene, callbacks) {
         init_constellations();
         init_stars();
         init_horizon();
+	init_coordinate_system();
     }
 
     function init_horizon() {
@@ -45,6 +47,12 @@ function SceneManager (scene, callbacks) {
     function _update_limit_mag(mag) {
 	stars.updateLimitMag(mag);
     }
+
+    function init_coordinate_system() {
+	coordinate_system = new CoordinateSystem(scene);
+	coordinate_system.generateCoordinateSystem();
+    }
+	
     
     function init_messiers() {
         messiers = new Messiers(scene);
@@ -63,13 +71,16 @@ function SceneManager (scene, callbacks) {
         constellations.generate_constellations();
     }
     function _show_constellations(value) {
-	constellations.showConstellations(value);
+	constellations.show(value);
+    }
+    function _show_coordinate_system(value) {
+	coordinate_system.show(value);
     }
     function _show_messiers(value) {
-	messiers.showMessiers(value);
+	messiers.show(value);
     }
     function _show_caldwells(value) {
-	caldwells.showCaldwells(value);
+	caldwells.show(value);
     }
     function _update_horizon(lat, lon) {
 //	console.log(lon);

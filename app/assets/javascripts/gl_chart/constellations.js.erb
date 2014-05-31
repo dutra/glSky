@@ -1,7 +1,7 @@
 function Constellations(scene) {
     var _this = this;
     this.generate_constellations = _generate_constellations;
-    this.showConstellations = _show_constellations;
+    this.show = _show;
     
     var lines = undefined;
     var scene = scene;    
@@ -32,7 +32,7 @@ function Constellations(scene) {
 	lines = l;
 	scene.add(lines);
     }
-    function _show_constellations(value) {
+    function _show(value) {
 	if(value)
 	    scene.add(_this.lines);
 	else

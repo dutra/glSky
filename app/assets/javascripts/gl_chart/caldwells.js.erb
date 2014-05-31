@@ -2,7 +2,7 @@ function Caldwells(scene) {
     var _this = this;
     this.generate_caldwells = _generate_caldwells;
 
-    this.showCaldwells = _show_caldwells;
+    this.show = _show;
     this.update_fov = _update_fov;
 
     _this.caldwell_attributes = undefined;
@@ -76,7 +76,7 @@ function Caldwells(scene) {
             $.each( data, function( key, caldwell ) {
 
 
-                var particle = latLongToVector3(caldwell["co"][0], caldwell["co"][1], 100,4);
+                var particle = latLongToVector3(caldwell["co"][0], caldwell["co"][1], 100, 4);
                 geom.vertices.push(particle);
 
                 var color = new THREE.Color( 0xffffff );
@@ -103,7 +103,7 @@ function Caldwells(scene) {
 	    _this.caldwell_uniforms.fov.value = fov;
 	}
     }
-    function _show_caldwells(value) {
+    function _show(value) {
 	if(value)
 	    _this.scene.add(_this.caldwells);
 	else

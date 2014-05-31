@@ -1,0 +1,51 @@
+function CoordinateSystem(scene) {
+
+    this.generateCoordinateSystem = _generate_coordinate_system;
+    this.show = _show;
+    
+    var _this = this;
+    _this.scene = scene;
+
+    var sphere;
+
+    function _generate_coordinate_system() {
+
+        // sphere
+
+        var geometry = new THREE.Geometry();
+        var material = new THREE.LineBasicMaterial({
+            color: 0x00081E
+        });
+        for( var i = 0; i < 36; i++ ) {
+            for( var j = 0; j < 18; j++ ) {
+                var start = latLongToVector3(i*10, j*10, 100);
+                var end = latLongToVector3(i*10, (j+1)*10, 100);
+                geometry.vertices.push(start);
+                geometry.vertices.push(end);
+            }
+        }
+        for( var i = 0; i < 36; i++ ) {
+            for( var j = -8; j < 8; j++ ) {
+                var start = latLongToVector3(j*10, i*10, 100);
+                var end = latLongToVector3((j+1)*10, i*10, 100);
+                geometry.vertices.push(start);
+                geometry.vertices.push(end);
+            }
+        }
+        sphere = new THREE.Line(geometry, material);
+        sphere.type = THREE.LinePieces;
+
+        _this.scene.add(sphere);
+
+    }
+
+    function _show(value) {
+	if(value)
+	    _this.scene.add(sphere);
+	else
+	    _this.scene.remove(sphere);
+    }
+
+
+
+}
