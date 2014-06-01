@@ -1,20 +1,24 @@
 function CoordinateSystem(scene) {
 
-    this.generateCoordinateSystem = _generate_coordinate_system;
-    this.show = _show;
+    this.generateEquatorial = _generate_equatorial;
+    this.showEquatorial = _show_equatorial;
+    this.showHorizontal = _show_horizontal;
+    this.generateHorizontal = _generate_horizontal;
+    this.updateZenith = _update_zenith;
+    
     
     var _this = this;
     _this.scene = scene;
 
-    var sphere;
+    var equatorial, horizontal;
 
-    function _generate_coordinate_system() {
+    function _generate_equatorial() {
 
         // sphere
 
         var geometry = new THREE.Geometry();
         var material = new THREE.LineBasicMaterial({
-            color: 0x00081E
+            color: 0x260066
         });
         for( var i = 0; i < 36; i++ ) {
             for( var j = 0; j < 18; j++ ) {
@@ -32,20 +36,59 @@ function CoordinateSystem(scene) {
                 geometry.vertices.push(end);
             }
         }
-        sphere = new THREE.Line(geometry, material);
-        sphere.type = THREE.LinePieces;
+        equatorial = new THREE.Line(geometry, material);
+        equatorial.type = THREE.LinePieces;
 
-        _this.scene.add(sphere);
+        _this.scene.add(equatorial);
 
     }
 
-    function _show(value) {
+    function _show_equatorial(value) {
 	if(value)
-	    _this.scene.add(sphere);
+	    _this.scene.add(equatorial);
 	else
-	    _this.scene.remove(sphere);
+	    _this.scene.remove(equatorial);
     }
 
+    function _show_horizontal(value) {
+	if(value)
+	    _this.scene.add(horizontal);
+	else
+	    _this.scene.remove(horizontal);
+	
+    }
 
+    function _generate_horizontal() {
+        // sphere
+
+        var geometry = new THREE.Geometry();
+        var material = new THREE.LineBasicMaterial({
+            color: 0x66000D
+        });
+        for( var i = 0; i < 36; i++ ) {
+            for( var j = 0; j < 18; j++ ) {
+                var start = latLongToVector3(i*10, j*10, 100);
+                var end = latLongToVector3(i*10, (j+1)*10, 100);
+                geometry.vertices.push(start);
+                geometry.vertices.push(end);
+            }
+        }
+        for( var i = 0; i < 36; i++ ) {
+            for( var j = -8; j < 8; j++ ) {
+                var start = latLongToVector3(j*10, i*10, 100);
+                var end = latLongToVector3((j+1)*10, i*10, 100);
+                geometry.vertices.push(start);
+                geometry.vertices.push(end);
+            }
+        }
+        horizontal = new THREE.Line(geometry, material);
+	horizontal.type = THREE.LinePieces;
+	_this.scene.add(horizontal);
+    	
+    }
+    function _update_zenith(lat, lon) {
+	horizontal.lookAt(latLongToVector3(lat, lon, 100));
+    }
+    
 
 }

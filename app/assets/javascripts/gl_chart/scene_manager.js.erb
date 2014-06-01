@@ -6,8 +6,9 @@ function SceneManager (scene, callbacks) {
     this.showConstellations = _show_constellations;
     this.showMessiers = _show_messiers;
     this.showCaldwells = _show_caldwells;
-    this.showCoordinateSystem = _show_coordinate_system;
-    this.updateHorizon = _update_horizon;
+    this.showEquatorial = _show_equatorial;
+    this.showHorizontal = _show_horizontal;
+    this.updateZenith = _update_zenith;
     this.showHorizon = _show_horizon;
     
     // private
@@ -50,7 +51,8 @@ function SceneManager (scene, callbacks) {
 
     function init_coordinate_system() {
 	coordinate_system = new CoordinateSystem(scene);
-	coordinate_system.generateCoordinateSystem();
+	coordinate_system.generateEquatorial();
+	coordinate_system.generateHorizontal();
     }
 	
     
@@ -73,8 +75,11 @@ function SceneManager (scene, callbacks) {
     function _show_constellations(value) {
 	constellations.show(value);
     }
-    function _show_coordinate_system(value) {
-	coordinate_system.show(value);
+    function _show_equatorial(value) {
+	coordinate_system.showEquatorial(value);
+    }
+    function _show_horizontal(value) {
+	coordinate_system.showHorizontal(value);
     }
     function _show_messiers(value) {
 	messiers.show(value);
@@ -85,8 +90,9 @@ function SceneManager (scene, callbacks) {
     function _show_horizon(value) {
 	horizon.show(value);
     }
-    function _update_horizon(lat, lon) {
+    function _update_zenith(lat, lon) {
 //	console.log(lon);
+	coordinate_system.updateZenith(lat, lon);
 	horizon.set_zenith(lat, lon);
     }
 }

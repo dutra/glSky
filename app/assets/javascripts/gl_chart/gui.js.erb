@@ -10,7 +10,8 @@ function GUI(callbacks) {
     var showCaldwells = callbacks.showCaldwells;
     var updateLocation = callbacks.updateLocation;
     var updateDateTime = callbacks.updateDateTime;
-    var showCoordinateSystem = callbacks.showCoordinateSystem;
+    var showEquatorial = callbacks.showEquatorial;
+    var showHorizontal = callbacks.showHorizontal;
     var showHorizon = callbacks.showHorizon;
     
     var gui_params, gui;
@@ -25,7 +26,8 @@ function GUI(callbacks) {
             constellations: true,
             messiers: true,
             caldwells: true,
-	    coordinate_system: false,
+	    equatorial: false,
+	    horizontal: false,
 	    horizon: true,
             loc: 0,
             time: date.getHours()+':'+date.getMinutes(),
@@ -57,12 +59,18 @@ function GUI(callbacks) {
             .onChange(function(value) {
                 showCaldwells(value)
             });
-	gelements.add(gui_params, 'coordinate_system')
-	    .name('Coordinate System')
+	gelements.add(gui_params, 'equatorial')
+	    .name('Show Equatorial')
 	    .onChange(function(value) {
-		showCoordinateSystem(value);
+		showEquatorial(value);
 	    });
-	showCoordinateSystem(false);
+	showEquatorial(false);
+	gelements.add(gui_params, 'horizontal')
+	    .name('Show Horizontal')
+	    .onChange(function(value) {
+		showHorizontal(value);
+	    });
+	showHorizontal(false);
 	
         var gloc = gui.addFolder('Location');
         gloc.add(gui_params, 'loc', { 'Uba, MG, Brazil': 0, 'Boston, MA, US': 1 })

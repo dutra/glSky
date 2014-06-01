@@ -67,7 +67,8 @@ function init_gui() {
                     showConstellations: sm.showConstellations,
                     showMessiers: sm.showMessiers,
                     showCaldwells: sm.showCaldwells,
-		    showCoordinateSystem: sm.showCoordinateSystem,
+		    showEquatorial: sm.showEquatorial,
+		    showHorizontal: sm.showHorizontal,
 		    showHorizon: sm.showHorizon,
 		    updateLocation: updateLocation,
                     updateDateTime: clock.updateDateTime
@@ -108,7 +109,7 @@ function animate() {
     if(elapsedTime > 0.500) {
         clock.updateDateTime(new Date(clock.getTime() + elapsedTime * 1000));
 
-        updateHorizon();
+        updateZenith();
 	gui.updateDateTime(new Date(clock.getTime()));
         elapsedTime = 0;
 
@@ -132,10 +133,10 @@ function updateLocation(lat, lon) {
     longitude = lon;
 }
 
-function updateHorizon() {
+function updateZenith() {
     // console.log(clock.date);
     // console.log(clock.date.getLocalSideReal(longitude));
-    sm.updateHorizon(latitude, clock.getLongitude(longitude));
+    sm.updateZenith(latitude, clock.getLongitude(longitude));
 }
 
 init();
