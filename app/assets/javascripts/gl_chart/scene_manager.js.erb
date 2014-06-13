@@ -10,12 +10,13 @@ function SceneManager (scene, callbacks) {
     this.showHorizontal = _show_horizontal;
     this.updateZenith = _update_zenith;
     this.showHorizon = _show_horizon;
+    this.updateDateTime = _update_date_time;
     
     // private
     var _this = this;
     var scene = scene;
    
-    var horizon, stars, messiers, caldwells, constellations, coordinate_system;
+    var horizon, stars, messiers, caldwells, constellations, coordinate_system, sun, moon;
     var addZoomCallback = callbacks.addZoomCallback;
     
     
@@ -24,6 +25,8 @@ function SceneManager (scene, callbacks) {
         init_messiers();
         init_constellations();
         init_stars();
+	init_sun();
+//	init_moon();
         init_horizon();
 	init_coordinate_system();
     }
@@ -33,14 +36,18 @@ function SceneManager (scene, callbacks) {
         horizon = new Horizon(scene);
 	horizon.generate_horizon();
         
-        var axisHelper = new THREE.AxisHelper( 5 );
-        scene.add(axisHelper);
-
         horizon.set_zenith(-21, -42);
 
     }
-
-
+    function init_sun() {
+	sun = new Sun(scene);
+	sun.generate();
+    }
+    
+    function init_moon() {
+	moon = new Moon(scene);
+	moon.generate();
+    }
     function init_stars() {
         stars = new Stars(scene);
         stars.generate_stars();
@@ -94,5 +101,8 @@ function SceneManager (scene, callbacks) {
 //	console.log(lon);
 	coordinate_system.updateZenith(lat, lon);
 	horizon.set_zenith(lat, lon);
+    }
+    function _update_date_time(date) {
+	sun.updateDateTime(date);
     }
 }

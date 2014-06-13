@@ -15,8 +15,8 @@ function Constellations(scene) {
             });
 
             $.each( data, function( key, c ) {
-                var startV = latLongToVector3(c['s'][0], c['s'][1], 100);
-                var endV = latLongToVector3(c['e'][0], c['e'][1], 100);
+                var startV = Util.latLongToVector3(c['s'][0], c['s'][1], 100);
+                var endV = Util.latLongToVector3(c['e'][0], c['e'][1], 100);
                 geometry.vertices.push(startV);
                 geometry.vertices.push(endV);
 

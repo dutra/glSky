@@ -22,16 +22,16 @@ function CoordinateSystem(scene) {
         });
         for( var i = 0; i < 36; i++ ) {
             for( var j = 0; j < 18; j++ ) {
-                var start = latLongToVector3(i*10, j*10, 100);
-                var end = latLongToVector3(i*10, (j+1)*10, 100);
+                var start = Util.latLongToVector3(i*10, j*10, 100);
+                var end = Util.latLongToVector3(i*10, (j+1)*10, 100);
                 geometry.vertices.push(start);
                 geometry.vertices.push(end);
             }
         }
         for( var i = 0; i < 36; i++ ) {
             for( var j = -8; j < 8; j++ ) {
-                var start = latLongToVector3(j*10, i*10, 100);
-                var end = latLongToVector3((j+1)*10, i*10, 100);
+                var start = Util.latLongToVector3(j*10, i*10, 100);
+                var end = Util.latLongToVector3((j+1)*10, i*10, 100);
                 geometry.vertices.push(start);
                 geometry.vertices.push(end);
             }
@@ -67,16 +67,16 @@ function CoordinateSystem(scene) {
         });
         for( var i = 0; i < 36; i++ ) {
             for( var j = 0; j < 18; j++ ) {
-                var start = latLongToVector3(i*10, j*10, 100);
-                var end = latLongToVector3(i*10, (j+1)*10, 100);
+                var start = Util.latLongToVector3(i*10, j*10, 100);
+                var end = Util.latLongToVector3(i*10, (j+1)*10, 100);
                 geometry.vertices.push(start);
                 geometry.vertices.push(end);
             }
         }
         for( var i = 0; i < 36; i++ ) {
             for( var j = -8; j < 8; j++ ) {
-                var start = latLongToVector3(j*10, i*10, 100);
-                var end = latLongToVector3((j+1)*10, i*10, 100);
+                var start = Util.latLongToVector3(j*10, i*10, 100);
+                var end = Util.latLongToVector3((j+1)*10, i*10, 100);
                 geometry.vertices.push(start);
                 geometry.vertices.push(end);
             }
@@ -87,7 +87,7 @@ function CoordinateSystem(scene) {
     	
     }
     function _update_zenith(lat, lon) {
-	horizontal.lookAt(latLongToVector3(lat, lon, 100));
+	horizontal.lookAt(Util.latLongToVector3(lat, lon, 100));
     }
     
 

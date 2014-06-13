@@ -22,7 +22,7 @@ function Horizon(scene) {
 
     function _set_zenith(lat, lon) {
 //	console.log(lon);
-        _this.horizon.lookAt(latLongToVector3(lat, lon, 1).negate());
+        _this.horizon.lookAt(Util.latLongToVector3(lat, lon, 1).negate());
 
     }
     function _show(value) {

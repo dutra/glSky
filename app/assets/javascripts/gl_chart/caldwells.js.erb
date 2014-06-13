@@ -76,7 +76,7 @@ function Caldwells(scene) {
             $.each( data, function( key, caldwell ) {
 
 
-                var particle = latLongToVector3(caldwell["co"][0], caldwell["co"][1], 100, 4);
+                var particle = Util.latLongToVector3(caldwell["co"][0], caldwell["co"][1], 100, 4);
                 geom.vertices.push(particle);
 
                 var color = new THREE.Color( 0xffffff );

@@ -1,0 +1,96 @@
+
+function Sun(scene) {
+
+    this.generate = _generate;
+    this.updateDateTime = _update_date_time;
+    
+    var _this = this;
+    var scene = scene;  
+    var sun;
+    
+    var e_g = 279.557208; // ecliptic longitude epoch in degrees at epoch 2010.0
+    var w_g = 283.112438; // longitude perigee in degrees at epoch 2010.0
+    var e = 0.016705; // eccentricity at epoch 2010.0
+    var r_0 = 1.495985E8; // semi-major axis in km
+    var theta_0 = 0.533128; // angular diameter at r = r_0 in degrees
+    var name = "Sun";
+    var color = "#FFC40C";
+
+    var currentDate = new Date();
+    var epoch = new Date("January 01, 2010 00:00:00");
+
+    function calculate() {
+        var D = (currentDate.getJulian() - epoch.getJulian())+1;
+        //      console.log("D::"+D);
+        var obliquity = Util.obliquityEcliptic(D);
+
+        var M = 360/365.242191 * D + e_g - w_g; // mean anomaly
+        M = Util.degreesToRadians(M);
+        //      console.log("M::"+M);
+        var v = M + 2 * e * Math.sin(M); // true anomaly
+
+        var ecliptic_longitude = v + Util.degreesToRadians(w_g)
+        //      ecliptic_longitude = Tool.toRadians(ecliptic_longitude);
+        //      console.log("lambda:: "+Tool.fromRadians2Degrees( ecliptic_longitude));
+        var ecliptic_latitude = 0; // it is the sun
+
+        var y = (Math.sin(ecliptic_longitude)*Math.cos(obliquity) - Math.tan(ecliptic_latitude)*Math.sin(obliquity));
+        var x = Math.cos(ecliptic_longitude);
+
+        var equatorial_longitude = Util.round(Math.atan2( y , x ));
+
+        var equatorial_latitude = Math.asin( Math.sin(ecliptic_latitude)*Math.cos(obliquity) + Math.cos(ecliptic_latitude)*Math.sin(obliquity)*Math.sin(ecliptic_longitude) );
+
+        //      console.log("Lo: "+equatorial_longitude+" La:"+equatorial_latitude);
+
+        var f = ( 1 + e*Math.cos(v) ) / ( 1 - e*e )
+        var r = r_0/f;
+        var theta = f*theta_0;
+
+
+        return {
+            mean_anomaly: M,
+            ecliptic_longitude: Util.radiansToDegrees(ecliptic_longitude),
+            equatorial_longitude: Util.radiansToDegrees(equatorial_longitude),
+            equatorial_latitude: Util.radiansToDegrees(equatorial_latitude),
+            distance_from_earth: r,
+            angular_diameter: theta
+        }
+    }
+    function _get_ecliptic_longitude() {
+        return calculate().ecliptic_longitude;
+    }
+
+    function _get_mean_anomaly() {
+        return calculate().mean_anomaly;
+    }
+    function _get_coordinates() {
+        var result = calculate();
+        return [Tool.fromRadians2Degrees(result.equatorial_longitude), Tool.fromRadians2Degrees(result.equatorial_latitude)];
+
+    }
+    function _apparent_angular_diameter() {
+        var result = calculate();
+        return result.angular_diameter;
+	
+    }
+
+    function _generate() {
+	var radius = _apparent_angular_diameter() / 2 * 1.745;
+	console.log(radius);
+	var geometry = new THREE.SphereGeometry( radius, 32, 32 );
+	var material = new THREE.MeshBasicMaterial( {color: 'yellow'} );
+	sun = new THREE.Mesh( geometry, material );
+	sun.position = Util.latLongToVector3(calculate().equatorial_latitude, calculate().equatorial_longitude, 100);
+        scene.add(sun);
+	console.log(calculate());
+    }
+
+    function _update_date_time(date) {
+	currentDate = date;
+	sun.position = Util.latLongToVector3(calculate().equatorial_latitude, calculate().equatorial_longitude, 100);
+	
+    }
+
+
+}

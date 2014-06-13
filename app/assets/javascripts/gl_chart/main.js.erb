@@ -14,7 +14,7 @@ var longitude = 0;
 function init() {
 
     camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
-    camera.position.z = -50;
+    camera.position.z = -1;
     scene = new THREE.Scene();
 
 
@@ -56,9 +56,9 @@ function init_controller() {
     controls = new THREE.TrackballControls(camera, $('#chart')[0]);
     controls.noPan = true;
     controls.zoomSpeed = 2.0;
-    controls.rotateSpeed = 0.5;
-    controls.dynamicDampingFactor = 0.6;
-    controls.target = new THREE.Vector3(0,0,-1);
+    controls.rotateSpeed = 0.8;
+    controls.dynamicDampingFactor = 0.4;
+    controls.target = new THREE.Vector3(0,0,0);
 }
 
 // starts DAT gui with callbacks for when gui variables change
@@ -110,7 +110,7 @@ function animate() {
         clock.updateDateTime(new Date(clock.getTime() + elapsedTime * 1000));
 
         updateZenith();
-	gui.updateDateTime(new Date(clock.getTime()));
+	updateDateTime(new Date(clock.getTime()));
         elapsedTime = 0;
 
     }
@@ -125,6 +125,11 @@ function animate() {
 
 function render() {
     renderer.render(scene, camera);
+}
+
+function updateDateTime(date) {
+    gui.updateDateTime(date);
+    sm.updateDateTime(date);
 }
 
 function updateLocation(lat, lon) {

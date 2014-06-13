@@ -60,7 +60,7 @@ function Stars(scene) {
                 values_mag.push( star["m"] );
                 values_size.push( 1.0/Math.pow((star["m"]+5),1.1)*60);
 
-                geometry.vertices.push( latLongToVector3(star["co"][0], star["co"][1], 100) );
+                geometry.vertices.push( Util.latLongToVector3(star["co"][0], star["co"][1], 100) );
 
 
             });

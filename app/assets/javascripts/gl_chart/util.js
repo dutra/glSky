@@ -1,20 +1,50 @@
-// convert the positions from a lat, lon to a position on a sphere.
-function latLongToVector3(lat, lon, radius, height) {
-    height = height || 0;
-    // x-axis goes through long,lat (0,0) so longitude 0 meets equator
-    // y-axis goes through (0,90)
-    // z-axis goes through poles
+var Util = new function() {
+    
+    // convert the positions from a lat, lon to a position on a sphere.
+    this.latLongToVector3 = function (lat, lon, radius, height) {
+        height = height || 0;
+        // x-axis goes through long,lat (0,0) so longitude 0 meets equator
+        // y-axis goes through (0,90)
+        // z-axis goes through poles
 
-    // convert to radians
-    var lat = (lat)*Math.PI/180.0;
-    var lon = (lon)*Math.PI/180.0;
+        // convert to radians
+        var lat = (lat)*Math.PI/180.0;
+        var lon = (lon)*Math.PI/180.0;
 
-    var x = (radius+height) * Math.cos(lat) * Math.cos(lon);
-    var y = (radius+height) * Math.cos(lat) * Math.sin(lon);
-    var z = (radius+height) * Math.sin(lat);
+        var x = (radius+height) * Math.cos(lat) * Math.cos(lon);
+        var y = (radius+height) * Math.cos(lat) * Math.sin(lon);
+        var z = (radius+height) * Math.sin(lat);
 
-    return new THREE.Vector3(x,y,z);
+        return new THREE.Vector3(x,y,z);
+    }
+    this.radiansToDegrees = function (radians) {
+	return radians*180 / Math.PI;
+    }
+
+    this.degreesToRadians = function(degrees) {
+	return degrees * Math.PI / 180;
+    }
+    this.obliquityEcliptic = function(T) {
+        T = T/36525;
+        var e = 0.4090926 - 0.00022707106 * T - 8.8769e-10 * T*T + 9.7128e-9 * T*T*T - 2.793e-12 * T*T*T*T - 2.104e-13 * T*T*T*T*T;
+        return e;
+    }
+
+        this.round = function (a) {
+        a = a - 2 * Math.PI * ( Math.round(a/(2*Math.PI)) );
+
+        if(a<0) {
+
+            a+= 2*Math.PI;
+            a %= 360;
+        }
+        return a;
+    }
+
+
+
 }
+
 
 
 // convert a vector direction to lat, long
@@ -27,12 +57,6 @@ function vector3ToLatLong(direction) {
     return [radiansToDegrees(lat), radiansToDegrees(lon)]
 }
 
-function radiansToDegrees(radians) {
-    return radians*180 / Math.PI;
-}
-function degreesToRadians(degrees) {
-    return degrees * Math.PI / 180;
-}
 
 function isValidDate(d) {
     if ( Object.prototype.toString.call(d) !== "[object Date]" )
