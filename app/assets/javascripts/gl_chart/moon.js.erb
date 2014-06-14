@@ -1,0 +1,158 @@
+function Moon(scene) {
+
+    this.generate = _generate;
+    
+    var _this = this;
+    var moon;
+    var scene = scene;
+    
+    var l_0 = 91.92936; // Mean longitude at epoch (degrees)
+    var P_0 = 130.143076; // Mean longitude of the perigee at the epoch (degrees)
+    var N_0 = 291.682547; // mean longitude of the node at the epoch (degrees)
+    var i = 5.145396; // inclination of the Moon's orbit (degrees)
+    var e = 0.0549; // eccentricity of the Moon's orbit
+    var a = 384401; // semi-major axis of Moon's orbit (km)
+    var theta_0 = 0.5181; // Moon's angular diameter at distance a from the Earth (degrees)
+    var pi_0 = 0.9507; // Moon's parallax at distance a from the Earth (degrees)
+
+    var name = "Moon";
+    var color = "white";
+
+    var epoch = new Date("January 01, 2010 00:00:00");
+    var currentDate = new Date();
+    
+    function _update(date) {
+	
+
+    }
+    
+    function calculate() {
+        var sun = new Sun(currentDate);
+        var sun_result = sun.getCoordinates();
+
+        var sun_ecliptic_longitude = sun.getEclipticLongitude(); // radians
+        sun_ecliptic_longitude = Util.radiansToDegrees(sun_ecliptic_longitude);
+
+        var sun_mean_anomaly = sun.getMeanAnomaly(); // radians
+
+        var D = (currentDate.getJulian() - epoch.getJulian())+1;
+//              console.log("D::: "+D);
+        var obliquity = Util.obliquityEcliptic(D);
+
+        var l = Util.roundDegrees(13.1763966*D + l_0);
+//              console.log("l::: "+l);
+
+        var M = Util.roundDegrees(l - 0.1114041*D - P_0);
+//              console.log("M::: "+M);
+
+        var N = Util.roundDegrees(N_0 - 0.0529539*D);
+//              console.log("N::: "+N);
+//              console.log("SEL::: "+sun_ecliptic_longitude);
+        var E_v = 1.2739*Math.sin(Util.round(Util.degreesToRadians( 2 * (l- sun_ecliptic_longitude) - M )));
+//        console.log("E_v::: "+E_v);
+
+
+        var A_e = 0.1858*Math.sin(sun_mean_anomaly);
+        var A_3 = 0.37*Math.sin(sun_mean_anomaly);
+//              console.log("A_e::: "+A_e);
+
+        var M_ = M + E_v - A_e - A_3;
+
+        var E_c = 6.28866 * Math.sin(Util.radiansToDegrees( M_ ));
+
+        var A_4 = 0.214 * Math.sin(Util.radiansToDegrees( 2*M_ ));
+
+        var l_ = l + E_v + E_c - A_e + A_4;
+//              console.log("l_::: "+l_);
+
+        var V = 0.6583*Math.sin(Util.degreesToRadians( 2 * ( l_ - sun_ecliptic_longitude ) ));
+
+        var l__ = l_ + V;
+//              console.log("l__::: "+l__);
+
+        var N_ = N - 0.16*Math.sin(Util.degreesToRadians( sun_mean_anomaly ));
+//              console.log("N_::: "+N_);
+
+        var a  = Util.degreesToRadians(l__ - N_);
+
+//              console.log("obliquity::: "+Math.cos(obliquity));
+
+        var y = (Math.sin(a)*Math.cos(Util.degreesToRadians(i)));
+//              console.log("y:::", y);
+        var x = Math.cos(a);
+//              console.log("x:::", x);
+
+        var ecliptic_longitude = Util.round(Util.round(Math.atan2( y , x )) + Util.degreesToRadians(N_));
+
+        var ecliptic_latitude = Math.asin( Math.sin(a)*Math.sin(Util.degreesToRadians(i)) );
+//              console.log("EcLo:::", Util.radiansToDegrees(ecliptic_longitude));
+//              console.log("EcLa:::", Util.radiansToDegrees(ecliptic_latitude));
+
+        var y = (Math.sin(ecliptic_longitude)*Math.cos(obliquity) - Math.tan(ecliptic_latitude)*Math.sin(obliquity));
+        var x = Math.cos(ecliptic_longitude);
+
+        var equatorial_longitude = Util.round(Math.atan2( y , x ));
+
+        var equatorial_latitude = Util.round( Math.asin( Math.sin(ecliptic_latitude)*Math.cos(obliquity) + Math.cos(ecliptic_latitude)*Math.sin(obliquity)*Math.sin(ecliptic_longitude) ) );
+
+//              console.log("EqLo:::", Util.radiansToDegrees(equatorial_longitude));
+//              console.log("EqLa:::", Util.radiansToDegrees(equatorial_latitude));
+
+
+        return {
+            sun_ecliptic_longitude: sun_ecliptic_longitude,
+            true_orbital_longitude: l__,
+            corrected_anomaly: M_,
+            centre_equation: E_c,
+            equatorial_longitude: Util.radiansToDegrees(equatorial_longitude),
+            equatorial_latitude: Util.radiansToDegrees(equatorial_latitude) 
+        }
+
+    }
+    function _get_coords() {
+        var result = calculate();
+        return [result.equatorial_longitude, result.equatorial_latitude];
+    }
+    
+    function _get_phase() {
+        var result = calculate();
+        var l__ = result.true_orbital_longitude;
+        var sun_ecliptic_longitude = result.sun_ecliptic_longitude;
+
+        var F = 1/2 * ( 1 - Math.cos(l__ - sun_ecliptic_longitude) );
+
+        return F*100;
+    }
+
+    function _get_distance_from_earth() {
+        var result = calculate();
+        var M_ = result.corrected_anomaly;
+        var E_c = result.centre_equation;
+        var p_ = ( 1 - e*e ) / ( 1 + e * Math.cos(M_ + E_c) );
+        var p = a*p_;
+
+        return p;
+    }
+
+    function _get_apparent_angular_diameter() {
+        var result = calculate();
+        var M_ = result.corrected_anomaly;
+        var E_c = result.centre_equation;
+        var p_ = ( 1 - e*e ) / ( 1 + e * Math.cos(M_ + E_c) );
+        var theta = theta_0 / p_;
+
+        return theta;
+    }
+
+    function _generate() {
+	var radius = _get_apparent_angular_diameter() / 2 * 1.745;
+	var geometry = new THREE.SphereGeometry( radius*5, 32, 32 );
+	var material = new THREE.MeshBasicMaterial( { color: 0xDCDCD8 } );
+	moon = new THREE.Mesh( geometry, material );
+//	console.log('Moon: ' + calculate().equatorial_latitude +' ' + calculate().equatorial_longitude);
+	moon.position = Util.latLongToVector3(calculate().equatorial_latitude, calculate().equatorial_longitude, 100);
+        scene.add(moon);
+    }
+
+
+}

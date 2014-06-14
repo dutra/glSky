@@ -1,5 +1,5 @@
 var Util = new function() {
-    
+
     // convert the positions from a lat, lon to a position on a sphere.
     this.latLongToVector3 = function (lat, lon, radius, height) {
         height = height || 0;
@@ -18,11 +18,11 @@ var Util = new function() {
         return new THREE.Vector3(x,y,z);
     }
     this.radiansToDegrees = function (radians) {
-	return radians*180 / Math.PI;
+        return radians*180 / Math.PI;
     }
 
     this.degreesToRadians = function(degrees) {
-	return degrees * Math.PI / 180;
+        return degrees * Math.PI / 180;
     }
     this.obliquityEcliptic = function(T) {
         T = T/36525;
@@ -30,7 +30,7 @@ var Util = new function() {
         return e;
     }
 
-        this.round = function (a) {
+    this.round = function (a) {
         a = a - 2 * Math.PI * ( Math.round(a/(2*Math.PI)) );
 
         if(a<0) {
@@ -40,6 +40,14 @@ var Util = new function() {
         }
         return a;
     }
+    this.roundDegrees = function(degrees) {
+        degrees = degrees%360;
+        if(degrees < 0) {
+            degrees +=360;
+        }
+        return degrees;
+    }
+
 
 
 

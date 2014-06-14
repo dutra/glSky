@@ -3,6 +3,9 @@ function Sun(scene) {
 
     this.generate = _generate;
     this.updateDateTime = _update_date_time;
+    this.getCoordinates = _get_coordinates;
+    this.getEclipticLongitude = _get_ecliptic_longitude;
+    this.getMeanAnomaly = _get_mean_anomaly;
     
     var _this = this;
     var scene = scene;  
@@ -66,7 +69,7 @@ function Sun(scene) {
     }
     function _get_coordinates() {
         var result = calculate();
-        return [Tool.fromRadians2Degrees(result.equatorial_longitude), Tool.fromRadians2Degrees(result.equatorial_latitude)];
+        return [Util.radiansToDegrees(result.equatorial_longitude), Util.radiansToDegrees(result.equatorial_latitude)];
 
     }
     function _apparent_angular_diameter() {
@@ -78,7 +81,7 @@ function Sun(scene) {
     function _generate() {
 	var radius = _apparent_angular_diameter() / 2 * 1.745;
 	console.log(radius);
-	var geometry = new THREE.SphereGeometry( radius, 32, 32 );
+	var geometry = new THREE.SphereGeometry( radius*5, 32, 32 );
 	var material = new THREE.MeshBasicMaterial( {color: 'yellow'} );
 	sun = new THREE.Mesh( geometry, material );
 	sun.position = Util.latLongToVector3(calculate().equatorial_latitude, calculate().equatorial_longitude, 100);
