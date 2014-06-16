@@ -1,6 +1,7 @@
 function Moon(scene) {
 
     this.generate = _generate;
+    this.updateDateTime = _update_date_time;
     
     var _this = this;
     var moon;
@@ -20,12 +21,7 @@ function Moon(scene) {
 
     var epoch = new Date("January 01, 2010 00:00:00");
     var currentDate = new Date();
-    
-    function _update(date) {
-	
-
-    }
-    
+      
     function calculate() {
         var sun = new Sun(currentDate);
         var sun_result = sun.getCoordinates();
@@ -144,6 +140,12 @@ function Moon(scene) {
         return theta;
     }
 
+    function _update_date_time(date) {
+	currentDate = date;
+	moon.position = Util.latLongToVector3(calculate().equatorial_latitude, calculate().equatorial_longitude, 100);
+	
+    }
+    
     function _generate() {
 	var radius = _get_apparent_angular_diameter() / 2 * 1.745;
 	var geometry = new THREE.SphereGeometry( radius*5, 32, 32 );
