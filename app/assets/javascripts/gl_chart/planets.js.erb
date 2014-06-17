@@ -1,0 +1,254 @@
+function Planet() {
+
+    this.generate = _generate;
+    
+    
+    var self = this;
+    // var scene;
+    //var orbit_period;
+    // var epoch_longitude;
+    // var perihelion_longitude;
+    // var eccentricity;
+    // var semimajor_axis;
+    // var orbital_inclination;
+    // var ascending_longitude;
+    // var angular_diameter;
+    // var visual_magnitude;
+
+    // var name;
+    // var size;
+    // var color;
+    // var planet;
+    
+    var currentDate = new Date();
+    var epoch = new Date("January 01, 2010 00:00:00");
+    this.currentDate;
+    this.innerPlanet;
+
+    function calculate () {
+
+        var tmp = earthRL();
+        var earthR = tmp.R;
+
+        var earthL = tmp.L;
+
+        var D = (currentDate.getJulian() - epoch.getJulian())+1;
+        var obliquity = Util.obliquityEcliptic(D);
+        var N = 360/365.242191 * D/orbit_period;
+        N = N - 360*(Math.round(N/360));
+        N = N*Math.PI/180;
+	      console.log("N:"+ N);
+        var M = N + epoch_longitude - perihelion_longitude;
+              console.log("M: "+M);
+        var v = M + 2 * eccentricity * Math.sin(M);
+        //      console.log("v: "+v);
+        var longitude =  v + perihelion_longitude;
+        longitude = Util.round(longitude);
+        //      console.log("longitude: "+longitude);
+        var radius = semimajor_axis * (1 - eccentricity * eccentricity) / (1 + eccentricity * Math.cos(v));
+        var heliocentric_latitude = Math.asin(Math.sin(longitude-ascending_longitude)*Math.sin(orbital_inclination));
+        //      console.log("heliocentric latitude: "+heliocentric_latitude);
+        var y = Math.sin(longitude - ascending_longitude) * Math.cos(orbital_inclination);
+        var x = Math.cos(longitude - ascending_longitude);
+        //      console.log("atan2: ");
+        //      console.log("atan arg: ", Math.tan(longitude - ascending_longitude) * Math.cos(orbital_inclination));
+        //      console.log("ascending longitude: ", ascending_longitude);
+        var projected_longitude = Util.round(Math.atan2( y,x )) + ascending_longitude;
+        //      console.log("projected longitude: "+round(projected_longitude));
+        var projected_radius = radius * Math.cos(heliocentric_latitude);
+
+        if(innerPlanet) {
+	    //           console.log("Inner Planet");
+            var ecliptic_longitude = Math.PI + earthL + Math.atan2((projected_radius * Math.sin( earthL - projected_longitude  )), (earthR - projected_radius*Math.cos( earthL - projected_longitude )));
+        } else {
+            var ecliptic_longitude = Math.atan2((earthR * Math.sin( projected_longitude - earthL )), (projected_radius - earthR*Math.cos( projected_longitude - earthL ))) + projected_longitude;
+        }
+        ecliptic_longitude = Util.round(ecliptic_longitude);
+        //      console.log("Ecliptic longitude: "+ecliptic_longitude);
+        var ecliptic_latitude = Math.atan( (projected_radius * Math.tan(heliocentric_latitude) * Math.sin(ecliptic_longitude - projected_longitude))  / ( earthR * Math.sin(projected_longitude - earthL)) );
+
+        var y = (Math.sin(ecliptic_longitude)*Math.cos(obliquity) - Math.tan(ecliptic_latitude)*Math.sin(obliquity));
+        var x = Math.cos(ecliptic_longitude);
+
+        var equatorial_longitude = Util.round(Math.atan2( y , x ));
+
+       // console.log("Equatorial longitude: "+toRA(toDegree((equatorial_longitude))));
+
+        var equatorial_latitude = Math.asin( Math.sin(ecliptic_latitude)*Math.cos(obliquity) + Math.cos(ecliptic_latitude)*Math.sin(obliquity)*Math.sin(ecliptic_longitude) );
+        //console.log("Equatorial latitude: "+toDegree(equatorial_latitude));
+        return {
+            heliocentric_longitude: longitude,
+            heliocentric_latitude: heliocentric_latitude,
+            radius: radius,
+            projected_longitude: projected_longitude,
+            equatorial_longitude: Util.radiansToDegrees(equatorial_longitude),
+            equatorial_latitude: Util.radiansToDegrees(equatorial_latitude)
+        }
+        //      toDegree(equatorial_longitude), toDegree(equatorial_latitude)];
+
+    }
+    function _apparent_angular_diameter() {
+        var tmp = earthRL();
+        var earthR = tmp.R;
+        var earthL = tmp.L;
+        tmp = calculate();
+
+        var l = tmp.projected_longitude;
+        var heliocentric_latitude = tmp.heliocentric_latitude;
+        var radius = tmp.radius;
+
+        var psquared = earthR*earthR + radius*radius - 2*earthR*radius*Math.cos(l - earthL)*Math.cos(heliocentric_latitude);
+        var p = Math.sqrt(psquared);
+        var apparent_angular_diameter = angular_diameter/p;
+//        console.log("Psquared: "+psquared+" p: "+p+" ad: "+apparent_angular_diameter);
+	return apparent_angular_diameter;
+    }
+    this.phase = function() {
+	var tmp = calculate();
+	var l = tmp.projected_longitude;
+        var equatorial_longitude = tmp.equatorial_longitude;
+	var F = 1/2 * ( 1 + Math.cos(equatorial_longitude - l) );
+	return F*100;
+    }
+    this.getCoords = function() {
+        var result = calculate();
+        return [result.equatorial_longitude, result.equatorial_latitude];
+    }
+
+    function earthRL() {
+        var orbit_period = 0.999996;
+        var epoch_longitude = 1.73759346406;
+        var perihelion_longitude = 1.80127578117;
+        var eccentricity = 0.016671;
+        var semimajor_axis = 0.999985;
+        var orbital_inclination = 0;
+        var ascending_longitude = 0;
+
+        var D = (currentDate.getJulian() - epoch.getJulian())+1;
+        var N = 360/365.242191 * D/orbit_period;
+        N = N - 360*(Math.round(N/360));
+        N = N*Math.PI/180;
+        var M = N + epoch_longitude - perihelion_longitude;
+        var v = M + 2 * eccentricity * Math.sin(M);
+
+        var longitude = v + perihelion_longitude;
+        longitude = Util.round(longitude);
+
+        var radius = semimajor_axis * (1 - eccentricity * eccentricity) / (1 + eccentricity * Math.cos(v));
+
+        return { L: longitude, R: radius };
+    }
+
+    function _generate() {
+	var radius = _apparent_angular_diameter() / 2 * 1.745;
+	console.log(radius);
+	var geometry = new THREE.SphereGeometry( 10, 32, 32 );
+	var material = new THREE.MeshBasicMaterial( {color: color} );
+	planet = new THREE.Mesh( geometry, material );
+	console.log("Jupiter: "+calculate().equatorial_latitude +", " + calculate().equatorial_longitude);
+	planet.position = Util.latLongToVector3(calculate().equatorial_latitude, calculate().equatorial_longitude, 100);
+        this.scene.add(planet);
+	console.log(calculate());
+    }
+
+}
+
+
+function Jupiter(scene) {
+    this.scene = scene;
+    size = 0.2;
+    name = "Jupiter";
+    color = "#f6fead";
+    orbit_period = 11.857911;
+    epoch_longitude = 5.8977665523;
+    perihelion_longitude = 0.2559228642;
+    eccentricity = 0.048907;
+    semimajor_axis = 5.20278;
+    orbital_inclination = 0.02275036679;
+    ascending_longitude = 1.75571396104;
+    angular_diameter = 196.74;
+    visual_magnitude = -9.40;
+
+    innerPlanet = false;
+
+}
+Jupiter.prototype = new Planet;
+
+function Mars(scene) {
+    this.scene = scene;
+    name = "Mars";
+    color = "#E62020";
+    orbit_period = 1.880765;
+    epoch_longitude = 1.90409243;
+    perihelion_longitude = 5.86809365;
+    eccentricity = 0.093348;
+    semimajor_axis = 1.523689;
+    orbital_inclination = 0.0322833552;
+    ascending_longitude = 0.866241814;
+    angular_diameter = 9.36;
+    visual_magnitude = -1.52;
+
+    innerPlanet = false;
+
+}
+Mars.prototype = new Planet;
+
+function Saturn(scene) {
+    this.scene = scene;
+    size = 1;
+    name = "Saturn";
+    color = "#FFC40C";
+    orbit_period = 29.310579;
+    epoch_longitude = 3.00891824;
+    perihelion_longitude = 1.56323905;
+    eccentricity = 0.053853;
+    semimajor_axis = 9.51134;
+    orbital_inclination = 0.0434115745;
+    ascending_longitude = 1.98534693;
+    angular_diameter = 165.60;
+    visual_magnitude = -8.88;
+
+    innerPlanet = false;
+
+}
+Saturn.prototype = new Planet;
+
+function Venus(scene) {
+    this.scene = scene;
+    size = 1;
+    name = "Venus";
+    color = "#FFFF00";
+    orbit_period = 0.615207;
+    epoch_longitude = 4.75253923;
+    perihelion_longitude = 2.2958061;
+    eccentricity = 0.006812;
+    semimajor_axis = 0.723329;
+    orbital_inclination = 0.0592486921;
+    ascending_longitude = 1.33987181;
+    angular_diameter = 16,92;
+    visual_magnitude = -4.40;
+
+    innerPlanet = true;
+
+}
+Venus.prototype = new Planet;
+
+function Mercury(scene) {
+    this.scene = scene;
+    size = 1;
+    name = "Mercury";
+    color = "#FF7E00";
+    orbit_period = 0.24085;
+    epoch_longitude = 1.3188947;
+    perihelion_longitude = 1.35458494;
+    eccentricity = 0.205627;
+    semimajor_axis = 0.387098;
+    orbital_inclination = 0.122262059;
+    ascending_longitude = 0.845594569;
+    angular_diameter = 6.74;
+    visual_magnitude = -0.42;
+
+    innerPlanet = true;
+
+}
+Mercury.prototype = new Planet;

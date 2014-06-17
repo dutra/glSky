@@ -17,6 +17,7 @@ function SceneManager (scene, callbacks) {
     var scene = scene;
    
     var horizon, stars, messiers, caldwells, constellations, coordinate_system, sun, moon;
+    var jupiter;
     var addZoomCallback = callbacks.addZoomCallback;
     
     
@@ -27,6 +28,7 @@ function SceneManager (scene, callbacks) {
         init_stars();
 	init_sun();
 	init_moon();
+	init_planets();
         init_horizon();
 	init_coordinate_system();
     }
@@ -38,6 +40,22 @@ function SceneManager (scene, callbacks) {
         
         horizon.set_zenith(-21, -42);
 
+    }
+    function init_planets() {
+	jupiter = new Jupiter(scene);
+	jupiter.generate();
+
+	mars = new Mars(scene);
+	mars.generate();
+
+	saturn = new Saturn(scene);
+	saturn.generate();
+
+	venus = new Venus(scene);
+	venus.generate();
+
+	mercury = new Mercury(scene);
+	mercury.generate();
     }
     function init_sun() {
 	sun = new Sun(scene);

@@ -5,6 +5,7 @@
 //= require ./gl_chart/caldwells
 //= require ./gl_chart/sun
 //= require ./gl_chart/moon
+//= require ./gl_chart/planets
 //= require ./gl_chart/horizon
 //= require ./gl_chart/gui
 //= require ./gl_chart/clock
