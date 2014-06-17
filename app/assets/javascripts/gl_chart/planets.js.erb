@@ -1,7 +1,7 @@
 function Planet() {
 
     this.generate = _generate;
-    
+    this.updateDateTime = _update_date_time;
     
     var self = this;
     // var scene;
@@ -37,9 +37,9 @@ function Planet() {
         var N = 360/365.242191 * D/orbit_period;
         N = N - 360*(Math.round(N/360));
         N = N*Math.PI/180;
-	      console.log("N:"+ N);
+//	      console.log("N:"+ N);
         var M = N + epoch_longitude - perihelion_longitude;
-              console.log("M: "+M);
+//              console.log("M: "+M);
         var v = M + 2 * eccentricity * Math.sin(M);
         //      console.log("v: "+v);
         var longitude =  v + perihelion_longitude;
@@ -101,7 +101,7 @@ function Planet() {
         var p = Math.sqrt(psquared);
         var apparent_angular_diameter = angular_diameter/p;
 //        console.log("Psquared: "+psquared+" p: "+p+" ad: "+apparent_angular_diameter);
-	return apparent_angular_diameter;
+	return apparent_angular_diameter/60.0/60.0; // arc seconds to degrees
     }
     this.phase = function() {
 	var tmp = calculate();
@@ -141,8 +141,8 @@ function Planet() {
 
     function _generate() {
 	var radius = _apparent_angular_diameter() / 2 * 1.745;
-	console.log(radius);
-	var geometry = new THREE.SphereGeometry( 10, 32, 32 );
+	console.log(name + " radius: " + _apparent_angular_diameter());
+	var geometry = new THREE.SphereGeometry( radius*300, 32, 32 );
 	var material = new THREE.MeshBasicMaterial( {color: color} );
 	planet = new THREE.Mesh( geometry, material );
 	console.log("Jupiter: "+calculate().equatorial_latitude +", " + calculate().equatorial_longitude);
@@ -150,6 +150,12 @@ function Planet() {
         this.scene.add(planet);
 	console.log(calculate());
     }
+    function _update_date_time(date) {
+	currentDate = date;
+	planet.position = Util.latLongToVector3(calculate().equatorial_latitude, calculate().equatorial_longitude, 100);
+	
+    }
+
 
 }
 

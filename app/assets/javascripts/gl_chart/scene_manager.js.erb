@@ -17,7 +17,7 @@ function SceneManager (scene, callbacks) {
     var scene = scene;
    
     var horizon, stars, messiers, caldwells, constellations, coordinate_system, sun, moon;
-    var jupiter;
+    var jupiter, mercury, saturn, mars, venus;
     var addZoomCallback = callbacks.addZoomCallback;
     
     
@@ -123,5 +123,10 @@ function SceneManager (scene, callbacks) {
     function _update_date_time(date) {
 	sun.updateDateTime(date);
 	moon.updateDateTime(date);
+	mars.updateDateTime(date);
+	jupiter.updateDateTime(date);
+	saturn.updateDateTime(date);
+	venus.updateDateTime(date);
+	mercury.updateDateTime(date);
     }
 }
